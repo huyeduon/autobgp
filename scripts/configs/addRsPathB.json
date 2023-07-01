@@ -1,0 +1,106 @@
+{
+    "totalCount": "1",
+    "imdata": [
+        {
+            "l3extRsPathL3OutAtt": {
+                "attributes": {
+                    "addr": "0.0.0.0",
+                    "annotation": "",
+                    "autostate": "disabled",
+                    "descr": "",
+                    "dn": "uni/tn-demo/out-tfbgp/lnodep-tfbgp_nodeProfile/lifp-tfbgp_vpcIpv4/rspathL3OutAtt-[topology/pod-1/protpaths-101-102/pathep-[3750_VPC]]",
+                    "encap": "vlan-601",
+                    "encapScope": "local",
+                    "ifInstT": "ext-svi",
+                    "ipv6Dad": "enabled",
+                    "isMultiPodDirect": "no",
+                    "llAddr": "::",
+                    "mac": "00:22:BD:F8:19:FF",
+                    "mode": "regular",
+                    "mtu": "9000",
+                    "tDn": "topology/pod-1/protpaths-101-102/pathep-[3750_VPC]",
+                    "targetDscp": "unspecified",
+                    "userdom": ":all:"
+                },
+                "children": [
+                    {
+                        "l3extMember": {
+                            "attributes": {
+                                "addr": "172.16.6.254/24",
+                                "annotation": "",
+                                "descr": "",
+                                "ipv6Dad": "enabled",
+                                "llAddr": "::",
+                                "name": "",
+                                "nameAlias": "",
+                                "side": "B",
+                                "userdom": ":all:"
+                            }
+                        }
+                    },
+                    {
+                        "l3extMember": {
+                            "attributes": {
+                                "addr": "172.16.6.2/24",
+                                "annotation": "",
+                                "descr": "",
+                                "ipv6Dad": "enabled",
+                                "llAddr": "::",
+                                "name": "",
+                                "nameAlias": "",
+                                "side": "A",
+                                "userdom": ":all:"
+                            }
+                        }
+                    },
+                    {
+                        "bgpPeerP": {
+                            "attributes": {
+                                "addr": "172.16.6.3",
+                                "addrTCtrl": "af-ucast",
+                                "adminSt": "enabled",
+                                "allowedSelfAsCnt": "3",
+                                "annotation": "",
+                                "capability": "",
+                                "connectivityType": "tenant",
+                                "ctrl": "send-com,send-ext-com",
+                                "ctrlExt": "",
+                                "descr": "",
+                                "name": "",
+                                "nameAlias": "",
+                                "peerCtrl": "",
+                                "privateASctrl": "",
+                                "ttl": "10",
+                                "userdom": ":all:",
+                                "weight": "0"
+                            },
+                            "children": [
+                                {
+                                    "bgpRsPeerPfxPol": {
+                                        "attributes": {
+                                            "annotation": "",
+                                            "tnBgpPeerPfxPolName": "",
+                                            "userdom": "all"
+                                        }
+                                    }
+                                },
+                                {
+                                    "bgpAsP": {
+                                        "attributes": {
+                                            "annotation": "",
+                                            "asn": "600",
+                                            "descr": "",
+                                            "name": "",
+                                            "nameAlias": "",
+                                            "userdom": ":all:"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
