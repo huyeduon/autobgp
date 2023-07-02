@@ -5,11 +5,11 @@
             "l3extRsPathL3OutAtt": {
                 "attributes": {
                     "addr": "0.0.0.0",
-                    "annotation": "",
-                    "autostate": "disabled",
+                    "annotation": "orchestrator:msc-shadow:no",
+                    "autostate": "enabled",
                     "descr": "",
-                    "dn": "uni/tn-demo/out-tfbgp/lnodep-tfbgp_nodeProfile/lifp-tfbgp_vpcIpv4/rspathL3OutAtt-[topology/pod-1/protpaths-101-102/pathep-[3750_VPC]]",
-                    "encap": "vlan-601",
+                    "dn": "uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v4/rspathL3OutAtt-[topology/pod-1/protpaths-1201-1202/pathep-[P3_3]]",
+                    "encap": "vlan-704",
                     "encapScope": "local",
                     "ifInstT": "ext-svi",
                     "ipv6Dad": "enabled",
@@ -17,8 +17,8 @@
                     "llAddr": "::",
                     "mac": "00:22:BD:F8:19:FF",
                     "mode": "regular",
-                    "mtu": "9000",
-                    "tDn": "topology/pod-1/protpaths-101-102/pathep-[3750_VPC]",
+                    "mtu": "9216",
+                    "tDn": "topology/pod-1/protpaths-1201-1202/pathep-[P3_3]",
                     "targetDscp": "unspecified",
                     "userdom": ":all:"
                 },
@@ -26,10 +26,10 @@
                     {
                         "l3extMember": {
                             "attributes": {
-                                "addr": "172.16.6.254/24",
-                                "annotation": "",
+                                "addr": "16.16.4.2/24",
+                                "annotation": "orchestrator:msc-shadow:no",
                                 "descr": "",
-                                "ipv6Dad": "enabled",
+                                "ipv6Dad": "disabled",
                                 "llAddr": "::",
                                 "name": "",
                                 "nameAlias": "",
@@ -41,10 +41,10 @@
                     {
                         "l3extMember": {
                             "attributes": {
-                                "addr": "172.16.6.2/24",
-                                "annotation": "",
+                                "addr": "16.16.4.3/24",
+                                "annotation": "orchestrator:msc-shadow:no",
                                 "descr": "",
-                                "ipv6Dad": "enabled",
+                                "ipv6Dad": "disabled",
                                 "llAddr": "::",
                                 "name": "",
                                 "nameAlias": "",
@@ -56,21 +56,21 @@
                     {
                         "bgpPeerP": {
                             "attributes": {
-                                "addr": "172.16.6.3",
+                                "addr": "16.16.4.10",
                                 "addrTCtrl": "af-ucast",
                                 "adminSt": "enabled",
                                 "allowedSelfAsCnt": "3",
-                                "annotation": "",
+                                "annotation": "orchestrator:msc-shadow:no",
                                 "capability": "",
                                 "connectivityType": "tenant",
-                                "ctrl": "send-com,send-ext-com",
+                                "ctrl": "",
                                 "ctrlExt": "",
                                 "descr": "",
                                 "name": "",
                                 "nameAlias": "",
                                 "peerCtrl": "",
                                 "privateASctrl": "",
-                                "ttl": "10",
+                                "ttl": "1",
                                 "userdom": ":all:",
                                 "weight": "0"
                             },
@@ -87,8 +87,8 @@
                                 {
                                     "bgpAsP": {
                                         "attributes": {
-                                            "annotation": "",
-                                            "asn": "600",
+                                            "annotation": "orchestrator:msc-shadow:no",
+                                            "asn": "65001",
                                             "descr": "",
                                             "name": "",
                                             "nameAlias": "",

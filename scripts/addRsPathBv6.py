@@ -9,6 +9,7 @@ password = "123Cisco123"
 URL = "https://" + APIC + "/api/aaaLogin.json"
 BODY = {"aaaUser": {"attributes": {"name": user, "pwd": password}}}
 
+
 def getCookie():
     global cookie
     global token
@@ -19,16 +20,18 @@ def getCookie():
     cookie = {"APIC-cookie": token}
     return cookie
 
-def addRsPathA():
+
+def addRsPathBv6():
     cookies = getCookie()
     url = "https://" + APIC + \
-        "/api/node/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v4.json"
+        "/api/node/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v6.json"
 
     requests.post(url, cookies=cookies, data=open(
-        'configs/addRsPathA.json', 'rb'), verify=False)
+        'configs/addRsPathBv6.json', 'rb'), verify=False)
+
 
 def main():
-    addRsPathA()
+    addRsPathBv6()
 
 
 if __name__ == '__main__':
