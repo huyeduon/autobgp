@@ -47,7 +47,7 @@ login2 = Login(s2apic, s2user, s2password)
 cookies1 = login1.getCookie()
 cookies2 = login2.getCookie()
 
-def getNodeState(nodeId, site, podId = 1):
+def getNodeState(nodeId, site="site1"):
     '''
     Returns fabric State of node whose id is nodeId in Pod PodId
     podId and nodeId are string type number
@@ -59,14 +59,29 @@ def getNodeState(nodeId, site, podId = 1):
     elif site == "site2":
         cookies = cookies2
         apic = s2apic
-   
+
     url = "https://" + apic + \
-        "/api/node/mo/topology/pod-" +str(podId) + "/node-" + str(nodeId) + ".json?query-target=self"
+    "/api/node/class/fabricNode.json?query-target-filter=and(wcard(fabricNode.dn," + "\"node-" + str(nodeId) + "\"))"
+    
     payload = ""
     
-    response = requests.get(url, cookies=cookies, data=payload, verify=False)
-    result = json.loads(response.text)
-    return result["imdata"][0]["fabricNode"]["attributes"]["fabricSt"]
+    try:
+        response = requests.get(url, cookies=cookies, data=payload, verify=False)
+        response.raise_for_status()
+        result = json.loads(response.text)
+        return result["imdata"][0]["fabricNode"]["attributes"]["fabricSt"]
+    
+    except requests.exceptions.HTTPError as err:
+        print("HTTP error occurred:", err)
+    
+    except requests.exceptions.ConnectionError as err:
+        print("Connection error occurred:", err)
+    
+    except requests.exceptions.Timeout as err:
+        print("Timeout error occurred:", err)
+
+    except requests.exceptions.RequestException as err:
+        print("An error occurred:", err)
 
 
 def addRsPath(ipv="v4", site="site1", side="A"):
@@ -103,6 +118,7 @@ def addRsPath(ipv="v4", site="site1", side="A"):
 
 def main():
     print("==============================================================")
+    '''
     print(f"Configure Site1 SideA IPv4")
     addRsPath("v4","site1","A")
 
@@ -122,6 +138,6 @@ def main():
             nodeState = getNodeState(nodeId, "site2")
             print(f"Site 2 Node", nodeName, nodeState)
 
-    '''
+    
 if __name__ == "__main__":
     main()
