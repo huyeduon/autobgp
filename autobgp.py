@@ -69,6 +69,47 @@ def getNodeState(nodeId, site="site1"):
     except requests.exceptions.RequestException as err:
         print("An error occurred:", err)
 
+def getBgpState(nodeId, site="site1", ipv="v4"):
+    '''
+    Check BGP peer state from leaf with both IPv4 and IPv6
+    Return Operational State such as established/idle
+    '''
+    if site == "site1":
+        cookies = cookies1
+        apic = s1apic
+
+    elif site == "site2":
+        cookies = cookies2
+        apic = s2apic
+    if ipv == "v4":
+        url = "https://" + apic + \
+            "/api/node/mo/topology/pod-1/node-" + str(nodeId) + \
+            "/sys/bgp/inst/dom-tenant-6:vrf-6-1806/peer-[16.16.4.10/32]/ent-[16.16.4.10].json?query-target=self"
+    elif ipv == "v6":
+        url = "https://" + apic + \
+            "/api/node/mo/topology/pod-1/node-"+ str(nodeId) + \
+            "/sys/bgp/inst/dom-tenant-6:vrf-6-1806/peer-[2002::16:16:4:10/128]/ent-[2002::16:16:4:10].json?query-target=self"
+        
+    payload = ""
+
+    try:
+        response = requests.get(url, cookies=cookies, data=payload, verify=False)
+        response.raise_for_status()
+        result = json.loads(response.text)
+        return result["imdata"][0]["bgpPeerEntry"]["attributes"]["operSt"]
+
+    except requests.exceptions.HTTPError as err:
+        print("HTTP error occurred:", err)
+    
+    except requests.exceptions.ConnectionError as err:
+        print("Connection error occurred:", err)
+    
+    except requests.exceptions.Timeout as err:
+        print("Timeout error occurred:", err)
+
+    except requests.exceptions.RequestException as err:
+        print("An error occurred:", err)
+
 
 def addRsPath(ipv="v4", site="site1", side="A"):
     '''
@@ -112,10 +153,36 @@ def main():
     print(f"Configure Site1 SideA IPv6")
     addRsPath("v6", "site1", "A")
     '''
-    print(f"Border Leaf Node fabric state:")
+    print(f"Border Leaf BGP peering state and fabric node state:")
 
     while True:
         time.sleep(10)
+        
+        LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
+        print(f"LA1 1201 has BGP IPv4 state: ", LA1_bgpPeerStateV4)
+
+        LA1_bgpPeerStateV6 = getBgpState("1201", site="site1", ipv="v6")
+        print(f"LA1 1201 has BGP IPv6 state: ", LA1_bgpPeerStateV6)
+
+        LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
+        print(f"LA2 1202 has BGP IPv4 state: ", LA2_bgpPeerStateV4)
+
+        LA2_bgpPeerStateV6 = getBgpState("1202", site="site1", ipv="v6")
+        print(f"LA2 1202 has BGP IPv6 state: ", LA2_bgpPeerStateV6)
+
+        LA1_nodeState = getNodeState("1201", "site1")
+        print(f"LA1 fabric Node state: ", LA1_nodeState)
+
+        LA2_nodeState = getNodeState("1202", "site1")
+        print(f"LA2 fabric Node state: ", LA2_nodeState)
+
+        if  LA1_bgpPeerStateV4 != "established" or LA1_nodeState != "active":
+            print("BGP peering from LA1 got issue, reconfiguring BGP peer from LA2")
+            addRsPath(ipv="v4", site="site1", side="B")
+            
+
+
+        '''
         for nodeId, nodeName in s1BorderLeaf.items():
             nodeState = getNodeState(nodeId, "site1")
             print(f"Site 1 Node", nodeName, nodeState)
@@ -123,6 +190,7 @@ def main():
         for nodeId, nodeName in s2BorderLeaf.items():
             nodeState = getNodeState(nodeId, "site2")
             print(f"Site 2 Node", nodeName, nodeState)
+        '''
 
     
 if __name__ == "__main__":
