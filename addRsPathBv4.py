@@ -27,7 +27,7 @@ def addRsPathB():
         "/api/node/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v4.json"
 
     requests.post(url, cookies=cookies, data=open(
-        'configs/addRsPathB.json', 'rb'), verify=False)
+        'configs/addRsPathBv4.json', 'rb'), verify=False)
 
 
 def main():
