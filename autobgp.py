@@ -113,7 +113,7 @@ def getBgpState(nodeId, site="site1", ipv="v4"):
         return result["imdata"][0]["bgpPeerEntry"]["attributes"]["operSt"]
 
     except requests.exceptions.HTTPError as err:
-        print("HTTP error occurred:", err)
+        print(f"HTTP error occurred, the node {str(nodeId)} is unreachable!")
     
     except requests.exceptions.ConnectionError as err:
         print("Connection error occurred:", err)
@@ -167,17 +167,17 @@ def sideA_is_down():
     '''
     return True if LA1 is not active or its BGP peer peering state is not established
     '''
-
+    '''
     LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
     print(f"LA1 1201 has BGP IPv4 state: ", LA1_bgpPeerStateV4)
 
     LA1_bgpPeerStateV6 = getBgpState("1201", site="site1", ipv="v6")
     print(f"LA1 1201 has BGP IPv6 state: ", LA1_bgpPeerStateV6)
-
+    '''
     LA1_nodeState = getNodeState("1201", "site1")
     print(f"LA1 fabric Node state: ", LA1_nodeState)
-
-    if  LA1_bgpPeerStateV4 != "established" or LA1_nodeState != "active":
+   
+    if LA1_nodeState != "active":
         return True
     else:
         return False
@@ -186,17 +186,17 @@ def sideB_is_down():
     '''
     return True if LA2 is not active or its BGP peer peering state is not established
     '''
-
+    '''
     LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
     print(f"LA2 1202 has BGP IPv4 state: ", LA2_bgpPeerStateV4)
 
     LA2_bgpPeerStateV6 = getBgpState("1202", site="site1", ipv="v6")
     print(f"LA2 1202 has BGP IPv6 state: ", LA2_bgpPeerStateV6)
-
+    '''
     LA2_nodeState = getNodeState("1202", "site1")
     print(f"LA2 fabric Node state: ", LA2_nodeState)
 
-    if  LA2_bgpPeerStateV4 != "established" or LA2_nodeState != "active":
+    if  LA2_nodeState != "active":
         return True
     else:
         return False
@@ -215,22 +215,42 @@ def monitor_reconfigBgp():
     global bgp_sideA_configured
     global bgp_sideB_configured
 
-    bgp_sideA_configured = True
-    bgp_sideB_configured = False
+    # check status of BGP configur on side-A and side-B
+    LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
+    LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
+
+    if LA1_bgpPeerStateV4 == "established":
+        bgp_sideB_configured = False
+        bgp_sideA_configured = True
+    else:
+        bgp_sideB_configured = True
+        bgp_sideA_configured = False
 
     while True:
         time.sleep(10)
-        # Monitor side A
+       
+        print("LA1 BGP peering state:",LA1_bgpPeerStateV4)
+        print("SideA configured state:", bgp_sideA_configured)
+        print("-------------******---------------")
+        print("LA2 BGP peering state:",LA2_bgpPeerStateV4)
+        print("SideB configured state:", bgp_sideB_configured)
+        print("-------------******---------------")
+
+         # Monitor side A
         if sideA_is_down() and not bgp_sideB_configured:
             configure_sideB()
-            bgp_sideB_configured = True
+            bgp_sideB_configured = True  
+            bgp_sideA_configured = False
             print("Configure BGP on Side B as Side A got BGP peering issue.")
+            print(f"Side B Configured:", bgp_sideB_configured)
         
         # Monitor side B
         if sideB_is_down() and not bgp_sideA_configured:
             configure_sideA()
             bgp_sideA_configured = True
+            bgp_sideB_configured = False
             print("Configure BGP on Side A as Side B got BGP peering issue.")
+            print(f"Side A Configured:", bgp_sideA_configured)
         
         time.sleep(10)  # Wait for 10 seconds before the next iteration
 
