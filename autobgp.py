@@ -216,19 +216,20 @@ def monitor_reconfigBgp():
     global bgp_sideB_configured
 
     # check status of BGP configur on side-A and side-B
-    LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
-    LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
-
-    if LA1_bgpPeerStateV4 == "established":
-        bgp_sideB_configured = False
-        bgp_sideA_configured = True
-    else:
-        bgp_sideB_configured = True
-        bgp_sideA_configured = False
+    
 
     while True:
-        time.sleep(10)
-       
+        time.sleep(5)
+        LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
+        LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
+
+        if LA1_bgpPeerStateV4 == "established":
+            bgp_sideB_configured = False
+            bgp_sideA_configured = True
+        else:
+            bgp_sideB_configured = True
+            bgp_sideA_configured = False
+        
         print("LA1 BGP peering state:",LA1_bgpPeerStateV4)
         print("SideA configured state:", bgp_sideA_configured)
         print("-------------******---------------")
