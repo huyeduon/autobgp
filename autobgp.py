@@ -3,21 +3,7 @@ import json
 import time
 from config import s1apic, s1user, s1password, s1BorderLeaf, s2apic, s2user, s2password, s2BorderLeaf
 requests.packages.urllib3.disable_warnings()
-'''
-URL = "https://" + APIC + "/api/aaaLogin.json"
-BODY = {"aaaUser": {"attributes": {"name": user, "pwd": password}}}
 
-
-def getCookie():
-    global cookie
-    global token
-    login_response = requests.post(URL, json=BODY, verify=False)
-    response_body = login_response.content
-    response_body_dictionary = json.loads(response_body)
-    token = response_body_dictionary["imdata"][0]["aaaLogin"]["attributes"]["token"]
-    cookie = {"APIC-cookie": token}
-    return cookie
-'''
 class Login:
     def __init__(self, url, username, password):
         self.url = url
