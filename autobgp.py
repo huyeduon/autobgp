@@ -9,35 +9,42 @@ class Login:
         self.url = url
         self.username = username
         self.password = password
+        self.cookies = None
+        self.cookie_expiry = 0
     
     def getCookie(self):
-        body =  {
+        current_time = time.time()
+        if self.cookies is None or current_time > self.cookie_expiry:
+            body =  {
                 "aaaUser": 
                     {
                         "attributes": {
                             "name": self.username, "pwd": self.password
                             }
                     }
-        }
-        login_url = "https://" + self.url + "/api/aaaLogin.json"
-        login_response = requests.post(login_url, json=body, verify=False)
-        response_body = login_response.content
-        response_body_dictionary = json.loads(response_body)
-        token = response_body_dictionary["imdata"][0]["aaaLogin"]["attributes"]["token"]
-        cookies = {"APIC-cookie": token}
-        return cookies
+            }
+            login_url = "https://" + self.url + "/api/aaaLogin.json"
+            login_response = requests.post(login_url, json=body, verify=False)
+            response_body = login_response.content
+            response_body_dictionary = json.loads(response_body)
+            token = response_body_dictionary["imdata"][0]["aaaLogin"]["attributes"]["token"]
+            cookies = {"APIC-cookie": token}
+            self.cookies = cookies
+            self.cookie_expiry = current_time + 550
+        return self.cookies
 
-login1 = Login(s1apic, s1user, s1password)
-login2 = Login(s2apic, s2user, s2password)
-
-cookies1 = login1.getCookie()
-cookies2 = login2.getCookie()
 
 def getNodeState(nodeId, site="site1"):
     '''
     Returns fabric State of node whose id is nodeId in Pod PodId
     podId and nodeId are string type number
     '''
+    login1 = Login(s1apic, s1user, s1password)
+    login2 = Login(s2apic, s2user, s2password)
+
+    cookies1 = login1.getCookie()
+    cookies2 = login2.getCookie()
+    
     if site == "site1":
         cookies = cookies1  
         apic = s1apic
@@ -74,6 +81,13 @@ def getBgpState(nodeId, site="site1", ipv="v4"):
     Check BGP peer state from leaf with both IPv4 and IPv6
     Return Operational State such as established/idle
     '''
+
+    login1 = Login(s1apic, s1user, s1password)
+    login2 = Login(s2apic, s2user, s2password)
+
+    cookies1 = login1.getCookie()
+    cookies2 = login2.getCookie()
+
     if site == "site1":
         cookies = cookies1
         apic = s1apic
@@ -116,6 +130,12 @@ def addRsPath(ipv="v4", site="site1", side="A"):
     Configure rsPath sideA/B, site1/site2, ipv4/ipv6
     '''
 
+    login1 = Login(s1apic, s1user, s1password)
+    login2 = Login(s2apic, s2user, s2password)
+
+    cookies1 = login1.getCookie()
+    cookies2 = login2.getCookie()
+
     if site == "site1":
         cookies = cookies1
         apic = s1apic
@@ -141,57 +161,86 @@ def addRsPath(ipv="v4", site="site1", side="A"):
             configLocation = "configs/addRsPathBv6.json"
     
     requests.post(url, cookies=cookies, data=open(configLocation, 'rb'), verify=False)
-    
 
-def main():
-    print("==============================================================")
-    '''
-    print(f"Configure Site1 SideA IPv4")
-    addRsPath("v4","site1","A")
 
-    time.sleep(2)
-    print(f"Configure Site1 SideA IPv6")
-    addRsPath("v6", "site1", "A")
+def sideA_is_down():
     '''
-    print(f"Border Leaf BGP peering state and fabric node state:")
+    return True if LA1 is not active or its BGP peer peering state is not established
+    '''
+
+    LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
+    print(f"LA1 1201 has BGP IPv4 state: ", LA1_bgpPeerStateV4)
+
+    LA1_bgpPeerStateV6 = getBgpState("1201", site="site1", ipv="v6")
+    print(f"LA1 1201 has BGP IPv6 state: ", LA1_bgpPeerStateV6)
+
+    LA1_nodeState = getNodeState("1201", "site1")
+    print(f"LA1 fabric Node state: ", LA1_nodeState)
+
+    if  LA1_bgpPeerStateV4 != "established" or LA1_nodeState != "active":
+        return True
+    else:
+        return False
+
+def sideB_is_down():
+    '''
+    return True if LA2 is not active or its BGP peer peering state is not established
+    '''
+
+    LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
+    print(f"LA2 1202 has BGP IPv4 state: ", LA2_bgpPeerStateV4)
+
+    LA2_bgpPeerStateV6 = getBgpState("1202", site="site1", ipv="v6")
+    print(f"LA2 1202 has BGP IPv6 state: ", LA2_bgpPeerStateV6)
+
+    LA2_nodeState = getNodeState("1202", "site1")
+    print(f"LA2 fabric Node state: ", LA2_nodeState)
+
+    if  LA2_bgpPeerStateV4 != "established" or LA2_nodeState != "active":
+        return True
+    else:
+        return False
+
+def configure_sideA():
+    addRsPath(ipv="v4", site="site1", side="A")
+    addRsPath(ipv="v6", site="site1", side="A")
+
+def configure_sideB():
+    addRsPath(ipv="v4", site="site1", side="B")
+    addRsPath(ipv="v6", site="site1", side="B")
+
+
+def monitor_reconfigBgp():
+
+    global bgp_sideA_configured
+    global bgp_sideB_configured
+
+    bgp_sideA_configured = True
+    bgp_sideB_configured = False
 
     while True:
         time.sleep(10)
+        # Monitor side A
+        if sideA_is_down() and not bgp_sideB_configured:
+            configure_sideB()
+            bgp_sideB_configured = True
+            print("Configure BGP on Side B as Side A got BGP peering issue.")
         
-        LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
-        print(f"LA1 1201 has BGP IPv4 state: ", LA1_bgpPeerStateV4)
+        # Monitor side B
+        if sideB_is_down() and not bgp_sideA_configured:
+            configure_sideA()
+            bgp_sideA_configured = True
+            print("Configure BGP on Side A as Side B got BGP peering issue.")
+        
+        time.sleep(10)  # Wait for 10 seconds before the next iteration
 
-        LA1_bgpPeerStateV6 = getBgpState("1201", site="site1", ipv="v6")
-        print(f"LA1 1201 has BGP IPv6 state: ", LA1_bgpPeerStateV6)
+def main():
+    print("==============================================================")
+   
+    print(f"Border Leaf BGP peering state and fabric node state:")
 
-        LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
-        print(f"LA2 1202 has BGP IPv4 state: ", LA2_bgpPeerStateV4)
-
-        LA2_bgpPeerStateV6 = getBgpState("1202", site="site1", ipv="v6")
-        print(f"LA2 1202 has BGP IPv6 state: ", LA2_bgpPeerStateV6)
-
-        LA1_nodeState = getNodeState("1201", "site1")
-        print(f"LA1 fabric Node state: ", LA1_nodeState)
-
-        LA2_nodeState = getNodeState("1202", "site1")
-        print(f"LA2 fabric Node state: ", LA2_nodeState)
-
-        if  LA1_bgpPeerStateV4 != "established" or LA1_nodeState != "active":
-            print("BGP peering from LA1 got issue, reconfiguring BGP peer from LA2")
-            addRsPath(ipv="v4", site="site1", side="B")
-            
-
-
-        '''
-        for nodeId, nodeName in s1BorderLeaf.items():
-            nodeState = getNodeState(nodeId, "site1")
-            print(f"Site 1 Node", nodeName, nodeState)
-
-        for nodeId, nodeName in s2BorderLeaf.items():
-            nodeState = getNodeState(nodeId, "site2")
-            print(f"Site 2 Node", nodeName, nodeState)
-        '''
-
+    monitor_reconfigBgp()
+    
     
 if __name__ == "__main__":
     main()
