@@ -37,5 +37,4 @@ SideA configured state: False</br>
 
 
 ## What's next</br>
-The script can be expanded to multiple border leaf, l3outs and sites. We can think about multiple thread to support continous monitoring and reconfigure multiple objects at same the time.</br>
-Combination of both pull and push model, that would require event subscription and more complicated logic, however the outcome will better and more responsive.</br>
+The script can be enhanced to support multiple border leafs, L3Outs, and sites, enabling scalability. You can utilize data structures like lists or dictionaries to store object information, such as APIC URLs, credentials, and identifiers. By iterating through these structures, you can perform operations on each object individually.
