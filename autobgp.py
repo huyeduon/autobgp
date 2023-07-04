@@ -1,3 +1,5 @@
+# Author: Huyen Duong, CNBU TME, Cisco Systems
+# Quality: POC level
 import requests
 import json
 import time
