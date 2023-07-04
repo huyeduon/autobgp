@@ -209,27 +209,69 @@ def configure_sideB():
     addRsPath(ipv="v4", site="site1", side="B")
     addRsPath(ipv="v6", site="site1", side="B")
 
+def side_configuredFlag(ipv="v4", site="site1"):
+    '''
+    Return True if side A is configured for BGP peering.
+    Else return False
+    '''
+    login1 = Login(s1apic, s1user, s1password)
+    login2 = Login(s2apic, s2user, s2password)
+
+    cookies1 = login1.getCookie()
+    cookies2 = login2.getCookie()
+
+    if site == "site1":
+        cookies = cookies1
+        apic = s1apic
+
+    elif site == "site2":
+        cookies = cookies2
+        apic = s2apic
+
+    payload = ""
+
+    url = "https://" + apic + \
+    "/api/node/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v4/rspathL3OutAtt-[topology/pod-1/protpaths-1201-1202/pathep-[P3_3]]/mem-A.json"
+    
+    try:
+        response = requests.get(url, cookies=cookies, data=payload, verify=False)
+        response.raise_for_status()
+        result = json.loads(response.text)
+        ipaddress = result["imdata"][0]["l3extMember"]["attributes"]["addr"]
+        if ipaddress == "16.16.4.2/24":
+            return True
+        else:
+            return False
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred, the node", err)
+    
+    except requests.exceptions.ConnectionError as err:
+        print("Connection error occurred:", err)
+    
+    except requests.exceptions.Timeout as err:
+        print("Timeout error occurred:", err)
+
+    except requests.exceptions.RequestException as err:
+        print("An error occurred:", err)
 
 def monitor_reconfigBgp():
 
     global bgp_sideA_configured
     global bgp_sideB_configured
-
-    # check status of BGP configur on side-A and side-B
-    
+    if side_configuredFlag():
+        bgp_sideA_configured = True
+        bgp_sideB_configured = False
+    else:
+        bgp_sideA_configured = False
+        bgp_sideB_configured = True
+    # check status of BGP configured on side-A and side-B
 
     while True:
         time.sleep(5)
         LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
         LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
 
-        if LA1_bgpPeerStateV4 == "established":
-            bgp_sideB_configured = False
-            bgp_sideA_configured = True
-        else:
-            bgp_sideB_configured = True
-            bgp_sideA_configured = False
-        
         print("LA1 BGP peering state:",LA1_bgpPeerStateV4)
         print("SideA configured state:", bgp_sideA_configured)
         print("-------------******---------------")
@@ -256,7 +298,7 @@ def monitor_reconfigBgp():
         time.sleep(10)  # Wait for 10 seconds before the next iteration
 
 def main():
-    print("==============================================================")
+    print("====================================================")
    
     print(f"Border Leaf BGP peering state and fabric node state:")
 
