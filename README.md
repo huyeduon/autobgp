@@ -11,3 +11,18 @@ python3 autobgp.py </br>
 What the console to see which Leaf is active and its BGP peering state.</br>
 Reload or shutdown the leaf who has BGP peering state established will trigger BGP reconfiguration to the other leaf.</br>
 
+Sample state info:</br>
+
+LA1 fabric Node state:  active</br>
+LA2 fabric Node state:  active</br>
+LA1 BGP peering state: idle</br>
+SideA configured state: False</br>
+-------------******---------------</br>
+LA2 BGP peering state: established</br>
+SideB configured state: True</br>
+-------------******---------------</br>
+LA1 fabric Node state:  active</br>
+LA2 fabric Node state:  active</br>
+LA1 BGP peering state: idle</br>
+SideA configured state: False</br>
+-------------******---------------</br>
