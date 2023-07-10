@@ -1,0 +1,106 @@
+{
+    "totalCount": "1",
+    "imdata": [
+        {
+            "l3extRsPathL3OutAtt": {
+                "attributes": {
+                    "addr": "0.0.0.0",
+                    "annotation": "orchestrator:msc-shadow:no",
+                    "autostate": "enabled",
+                    "descr": "",
+                    "dn": "uni/tn-tenant-6/out-L3OUT-LA12-v513/lnodep-node-1201-1202/lifp-svi-P13_13-vlan-513-v4/rspathL3OutAtt-[topology/pod-1/protpaths-1201-1202/pathep-[P13_13]]",
+                    "encap": "vlan-513",
+                    "encapScope": "local",
+                    "ifInstT": "ext-svi",
+                    "ipv6Dad": "enabled",
+                    "isMultiPodDirect": "no",
+                    "llAddr": "::",
+                    "mac": "00:22:BD:F8:19:FF",
+                    "mode": "regular",
+                    "mtu": "9216",
+                    "tDn": "topology/pod-1/protpaths-1201-1202/pathep-[P13_13]",
+                    "targetDscp": "unspecified",
+                    "userdom": ":all:"
+                },
+                "children": [
+                    {
+                        "l3extMember": {
+                            "attributes": {
+                                "addr": "12.12.13.3/24",
+                                "annotation": "orchestrator:msc-shadow:no",
+                                "descr": "",
+                                "ipv6Dad": "disabled",
+                                "llAddr": "::",
+                                "name": "",
+                                "nameAlias": "",
+                                "side": "B",
+                                "userdom": ":all:"
+                            }
+                        }
+                    },
+                    {
+                        "l3extMember": {
+                            "attributes": {
+                                "addr": "12.12.13.2/24",
+                                "annotation": "orchestrator:msc-shadow:no",
+                                "descr": "",
+                                "ipv6Dad": "disabled",
+                                "llAddr": "::",
+                                "name": "",
+                                "nameAlias": "",
+                                "side": "A",
+                                "userdom": ":all:"
+                            }
+                        }
+                    },
+                    {
+                        "bgpPeerP": {
+                            "attributes": {
+                                "addr": "12.12.13.10",
+                                "addrTCtrl": "af-ucast",
+                                "adminSt": "enabled",
+                                "allowedSelfAsCnt": "3",
+                                "annotation": "orchestrator:msc-shadow:no",
+                                "capability": "",
+                                "connectivityType": "tenant",
+                                "ctrl": "as-override,dis-peer-as-check",
+                                "ctrlExt": "",
+                                "descr": "",
+                                "name": "",
+                                "nameAlias": "",
+                                "peerCtrl": "bfd",
+                                "privateASctrl": "",
+                                "ttl": "1",
+                                "userdom": ":all:",
+                                "weight": "0"
+                            },
+                            "children": [
+                                {
+                                    "bgpRsPeerPfxPol": {
+                                        "attributes": {
+                                            "annotation": "",
+                                            "tnBgpPeerPfxPolName": "",
+                                            "userdom": "all"
+                                        }
+                                    }
+                                },
+                                {
+                                    "bgpAsP": {
+                                        "attributes": {
+                                            "annotation": "orchestrator:msc-shadow:no",
+                                            "asn": "65001",
+                                            "descr": "",
+                                            "name": "",
+                                            "nameAlias": "",
+                                            "userdom": ":all:"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
