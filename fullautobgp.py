@@ -3,8 +3,36 @@
 import requests
 import json
 import time
-from config import s1apic, s1user, s1password, s1BorderLeaf, s2apic, s2user, s2password, s2BorderLeaf
+import threading
+import re
 requests.packages.urllib3.disable_warnings()
+from config import s1apic, s1user, s1password, s2apic, s2user, s2password
+from config import LA1_tenant5_v307_v4, LA1_tenant5_v307_v6, LA1_tenant6_v513_v4, LA1_tenant6_v513_v6 
+from config import LA1_tenant6_v704_v4, LA1_tenant6_v704_v6, LA2_tenant5_v307_v4, LA2_tenant5_v307_v6
+from config import LA2_tenant6_v513_v4, LA2_tenant6_v513_v6, LA2_tenant6_v704_v4, LA2_tenant6_v704_v6
+from config import LA3_tenant5_v308_v4, LA3_tenant5_v308_v6, LA3_tenant6_v515_v4, LA3_tenant6_v515_v6
+from config import LA3_tenant6_v708_v4, LA3_tenant6_v708_v6, LA4_tenant5_v308_v4, LA4_tenant5_v308_v6
+from config import LA4_tenant6_v515_v4, LA4_tenant6_v515_v6, LA4_tenant6_v708_v4, LA4_tenant6_v708_v6
+from config import LB1_tenant6_v514_v4, LB1_tenant6_v514_v6, LB1_tenant6_v516_v4, LB1_tenant6_v516_v6
+from config import LB1_tenant6_v712_v4, LB1_tenant6_v712_v6, LB2_tenant6_v514_v4, LB2_tenant6_v514_v6
+from config import LB2_tenant6_v516_v4, LB2_tenant6_v516_v6, LB2_tenant6_v712_v4, LB2_tenant6_v712_v6
+from config import LA1_bgp_url, LA2_bgp_url, LA3_bgp_url, LA4_bgp_url, LB1_bgp_url, LB2_bgp_url
+from config import LA1_bgp_url_dict, LA2_bgp_url_dict, LA3_bgp_url_dict, LA4_bgp_url_dict, LB1_bgp_url_dict, LB2_bgp_url_dict
+from config import rsPath_LA12_tenant5_v307_v4, rsPath_LA12_tenant5_v307_v6, rsPath_LA12_tenant6_v513_v4, rsPath_LA12_tenant6_v513_v6, rsPath_LA12_tenant6_v704_v4, rsPath_LA12_tenant6_v704_v6
+from config import rsPath_LA34_tenant5_v308_v4, rsPath_LA34_tenant5_v308_v6, rsPath_LA34_tenant6_v515_v4, rsPath_LA34_tenant6_v515_v6, rsPath_LA34_tenant6_v708_v4, rsPath_LA34_tenant6_v708_v6
+from config import rsPath_LB12_tenant6_v514_v4, rsPath_LB12_tenant6_v514_v6, rsPath_LB12_tenant6_v516_v4, rsPath_LB12_tenant6_v516_v6, rsPath_LB12_tenant6_v712_v4, rsPath_LB12_tenant6_v712_v6
+from config import rsPath_LA12, rsPath_LA34, rsPath_LB12
+from config import rsPath_LA12_tenant5_v307_v4_LocA, rsPath_LA12_tenant5_v307_v4_LocB, rsPath_LA12_tenant5_v307_v6_LocA, rsPath_LA12_tenant5_v307_v6_LocB
+from config import rsPath_LA12_tenant6_v513_v4_LocA, rsPath_LA12_tenant6_v513_v4_LocB, rsPath_LA12_tenant6_v513_v6_LocA, rsPath_LA12_tenant6_v513_v6_LocB
+from config import rsPath_LA12_tenant6_v704_v4_LocA, rsPath_LA12_tenant6_v704_v4_LocB, rsPath_LA12_tenant6_v704_v6_LocA, rsPath_LA12_tenant6_v704_v6_LocB
+from config import rsPath_LA34_tenant5_v308_v4_LocA, rsPath_LA34_tenant5_v308_v4_LocB, rsPath_LA34_tenant5_v308_v6_LocA, rsPath_LA34_tenant5_v308_v6_LocB
+from config import rsPath_LA34_tenant6_v515_v4_LocA, rsPath_LA34_tenant6_v515_v4_LocB, rsPath_LA34_tenant6_v515_v6_LocA, rsPath_LA34_tenant6_v515_v6_LocB 
+from config import rsPath_LA34_tenant6_v708_v4_LocA, rsPath_LA34_tenant6_v708_v4_LocB, rsPath_LA34_tenant6_v708_v6_LocA, rsPath_LA34_tenant6_v708_v6_LocB
+from config import rsPath_LB12_tenant6_v514_v4_LocA, rsPath_LB12_tenant6_v514_v4_LocB, rsPath_LB12_tenant6_v514_v6_LocA, rsPath_LB12_tenant6_v514_v6_LocB
+from config import rsPath_LB12_tenant6_v516_v4_LocA, rsPath_LB12_tenant6_v516_v4_LocB, rsPath_LB12_tenant6_v516_v6_LocA, rsPath_LB12_tenant6_v516_v6_LocB 
+from config import rsPath_LB12_tenant6_v712_v4_LocA, rsPath_LB12_tenant6_v712_v4_LocB, rsPath_LB12_tenant6_v712_v6_LocA, rsPath_LB12_tenant6_v712_v6_LocB 
+from config import LA1_tenant5_v307_v4_mem_A, LA1_tenant6_v513_v4_mem_A, LA1_tenant6_v704_v4_mem_A, LA3_tenant5_v308_v4_mem_A, LA3_tenant6_v515_v4_mem_A, LA3_tenant6_v708_v4_mem_A, LB1_tenant6_v514_v4_mem_A, LB1_tenant6_v516_v4_mem_A, LB1_tenant6_v712_v4_mem_A
+from config import ipVpcMemberMappingSite1LA12, ipVpcMemberMappingSite1LA34, ipVpcMemberMappingSite2LB12
 
 class Login:
     def __init__(self, url, username, password):
@@ -35,277 +63,365 @@ class Login:
             self.cookie_expiry = current_time + 550
         return self.cookies
 
+class BorderLeaf(Login):
 
-def getNodeState(nodeId, site="site1"):
-    '''
-    Returns fabric State of node whose id is nodeId in Pod PodId
-    podId and nodeId are string type number
-    '''
-    login1 = Login(s1apic, s1user, s1password)
-    login2 = Login(s2apic, s2user, s2password)
+    def __init__(self, nodeName, nodeId, siteName, podId, siteIpAddress, username, password):
+        super().__init__(siteIpAddress, username, password)
+        self.nodeName = nodeName
+        self.nodeId = nodeId
+        self.siteName = siteName
+        self.podId = podId
+        self.siteIpAddress = siteIpAddress
+        self.cookies = None
+        self._bgpUrl = None
+        #self.side = None  # configured Side (A/B)
+        #self.rsPathUrl = None
+        #self.rsPathConfigFileLocation = None
+  
+    def setSide(self, side):
+        self.side = side
 
-    cookies1 = login1.getCookie()
-    cookies2 = login2.getCookie()
+    @property
+    def bgpUrl(self):
+        return self._bgpUrl
+
+    @bgpUrl.setter
+    def bgpUrl(self, url):
+        self._bgpUrl = url
     
-    if site == "site1":
-        cookies = cookies1  
-        apic = s1apic
+    def getNodeState(self): 
+        '''
+        Retrieve ACI leaf state, focusing on active and inactive state.
+        '''
+        payload = ""
+        cookies = self.getCookie()
+        url = "https://" + self.siteIpAddress + \
+            "/api/node/class/fabricNode.json?query-target-filter=and(wcard(fabricNode.dn," + "\"node-" + str(self.nodeId) + "\"))"
+        payload = ""
 
-    elif site == "site2":
-        cookies = cookies2
-        apic = s2apic
-
-    url = "https://" + apic + \
-    "/api/node/class/fabricNode.json?query-target-filter=and(wcard(fabricNode.dn," + "\"node-" + str(nodeId) + "\"))"
+        try:
+            response = requests.get(url, cookies=cookies, data=payload, verify=False)
+            response.raise_for_status()
+            result = json.loads(response.text)
+            return result["imdata"][0]["fabricNode"]["attributes"]["fabricSt"]
     
-    payload = ""
+        except requests.exceptions.HTTPError as err:
+            print("HTTP error occurred:", err)
     
-    try:
-        response = requests.get(url, cookies=cookies, data=payload, verify=False)
-        response.raise_for_status()
-        result = json.loads(response.text)
-        return result["imdata"][0]["fabricNode"]["attributes"]["fabricSt"]
+        except requests.exceptions.ConnectionError as err:
+            print("Connection error occurred:", err)
     
-    except requests.exceptions.HTTPError as err:
-        print("HTTP error occurred:", err)
+        except requests.exceptions.Timeout as err:
+            print("Timeout error occurred:", err)
+
+        except requests.exceptions.RequestException as err:
+            print("An error occurred:", err)
+
+    def getBgpState(self):
+        payload = ""
+        cookies = self.getCookie()
+        url = self.bgpUrl
+        if url:
+            try:
+                response = requests.get(url, cookies=cookies, data=payload, verify=False)
+                response.raise_for_status()
+                result = json.loads(response.text)
+                #print(result)
+                return result["imdata"][0]["bgpPeerEntry"]["attributes"]["operSt"]
+
+            except requests.exceptions.HTTPError as err:
+                print(f"HTTP error occurred, the node {self.nodeId} is unreachable!")
     
-    except requests.exceptions.ConnectionError as err:
-        print("Connection error occurred:", err)
+            except requests.exceptions.ConnectionError as err:
+                print("Connection error occurred:", err)
     
-    except requests.exceptions.Timeout as err:
-        print("Timeout error occurred:", err)
+            except requests.exceptions.Timeout as err:
+                print("Timeout error occurred:", err)
 
-    except requests.exceptions.RequestException as err:
-        print("An error occurred:", err)
+            except requests.exceptions.RequestException as err:
+                print("An error occurred:", err)
 
-def getBgpState(nodeId, site="site1", ipv="v4"):
-    '''
-    Check BGP peer state from leaf with both IPv4 and IPv6
-    Return Operational State such as established/idle
-    '''
-
-    login1 = Login(s1apic, s1user, s1password)
-    login2 = Login(s2apic, s2user, s2password)
-
-    cookies1 = login1.getCookie()
-    cookies2 = login2.getCookie()
-
-    if site == "site1":
-        cookies = cookies1
-        apic = s1apic
-
-    elif site == "site2":
-        cookies = cookies2
-        apic = s2apic
-    if ipv == "v4":
-        url = "https://" + apic + \
-            "/api/node/mo/topology/pod-1/node-" + str(nodeId) + \
-            "/sys/bgp/inst/dom-tenant-6:vrf-6-1806/peer-[16.16.4.10/32]/ent-[16.16.4.10].json?query-target=self"
-    elif ipv == "v6":
-        url = "https://" + apic + \
-            "/api/node/mo/topology/pod-1/node-"+ str(nodeId) + \
-            "/sys/bgp/inst/dom-tenant-6:vrf-6-1806/peer-[2002::16:16:4:10/128]/ent-[2002::16:16:4:10].json?query-target=self"
+    def display_info(self):
+        node_state = self.getNodeState()
+        bgp_peering_state = self.getBgpState()
         
-    payload = ""
+        #print("ACI Leaf Information:")
+        #print(f"Site Name: {self.siteName}")
+        #print(f"Pod ID: {self.podId}")
+        print(f"Node Name: {self.nodeName}")
+        #print(f"Node ID: {self.nodeId}")
+        #print(f"Node State: {node_state}")
+        print(f"BGP URL: {self.bgpUrl}")
+        print(f"BGP Peering State: {bgp_peering_state}")
 
-    try:
-        response = requests.get(url, cookies=cookies, data=payload, verify=False)
-        response.raise_for_status()
-        result = json.loads(response.text)
-        return result["imdata"][0]["bgpPeerEntry"]["attributes"]["operSt"]
-
-    except requests.exceptions.HTTPError as err:
-        print(f"HTTP error occurred, the node {str(nodeId)} is unreachable!")
+    def addRsPath(self, rsPathUrl, rsPathConfigFileLocation):
+        '''
+        Configure rsPath to change BGP Peering
+        '''
+        cookies = self.getCookie()
+        url = rsPathUrl
+        configLocation = rsPathConfigFileLocation
+        if url:
+            try:
+                requests.post(url, cookies=cookies, data=open(configLocation, 'rb'), verify=False)
     
-    except requests.exceptions.ConnectionError as err:
-        print("Connection error occurred:", err)
+            except requests.exceptions.HTTPError as err:
+                print(f"HTTP error occurred, the node {self.nodeId} is unreachable!")
     
-    except requests.exceptions.Timeout as err:
-        print("Timeout error occurred:", err)
-
-    except requests.exceptions.RequestException as err:
-        print("An error occurred:", err)
-
-
-def addRsPath(ipv="v4", site="site1", side="A"):
-    '''
-    Configure rsPath sideA/B, site1/site2, ipv4/ipv6
-    '''
-
-    login1 = Login(s1apic, s1user, s1password)
-    login2 = Login(s2apic, s2user, s2password)
-
-    cookies1 = login1.getCookie()
-    cookies2 = login2.getCookie()
-
-    if site == "site1":
-        cookies = cookies1
-        apic = s1apic
-
-    elif site == "site2":
-        cookies = cookies2
-        apic = s2apic
+            except requests.exceptions.ConnectionError as err:
+                print("Connection error occurred:", err)
     
-    if ipv == "v4":
-        url = "https://" + apic + \
-            "/api/node/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v4.json"
-        if side == "A":
-            configLocation = "configs/addRsPathAv4.json"
-        elif side == "B":
-            configLocation = "configs/addRsPathBv4.json"
+            except requests.exceptions.Timeout as err:
+                print("Timeout error occurred:", err)
 
-    elif ipv == "v6":
-        url = "https://" + apic + \
-            "/api/node/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v6.json"
-        if side == "A":
-            configLocation = "configs/addRsPathAv6.json"
-        elif side == "B":
-            configLocation = "configs/addRsPathBv6.json"
-    
-    requests.post(url, cookies=cookies, data=open(configLocation, 'rb'), verify=False)
+            except requests.exceptions.RequestException as err:
+                print("An error occurred:", err)
 
-
-def sideA_is_down():
-    '''
-    return True if LA1 is not active or its BGP peer peering state is not established
-    '''
-    '''
-    LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
-    print(f"LA1 1201 has BGP IPv4 state: ", LA1_bgpPeerStateV4)
-
-    LA1_bgpPeerStateV6 = getBgpState("1201", site="site1", ipv="v6")
-    print(f"LA1 1201 has BGP IPv6 state: ", LA1_bgpPeerStateV6)
-    '''
-    LA1_nodeState = getNodeState("1201", "site1")
-    print(f"LA1 fabric Node state: ", LA1_nodeState)
-   
-    if LA1_nodeState != "active":
-        return True
-    else:
-        return False
-
-def sideB_is_down():
-    '''
-    return True if LA2 is not active or its BGP peer peering state is not established
-    '''
-    '''
-    LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
-    print(f"LA2 1202 has BGP IPv4 state: ", LA2_bgpPeerStateV4)
-
-    LA2_bgpPeerStateV6 = getBgpState("1202", site="site1", ipv="v6")
-    print(f"LA2 1202 has BGP IPv6 state: ", LA2_bgpPeerStateV6)
-    '''
-    LA2_nodeState = getNodeState("1202", "site1")
-    print(f"LA2 fabric Node state: ", LA2_nodeState)
-
-    if  LA2_nodeState != "active":
-        return True
-    else:
-        return False
-
-def configure_sideA():
-    addRsPath(ipv="v4", site="site1", side="A")
-    addRsPath(ipv="v6", site="site1", side="A")
-
-def configure_sideB():
-    addRsPath(ipv="v4", site="site1", side="B")
-    addRsPath(ipv="v6", site="site1", side="B")
-
-def side_configuredFlag(ipv="v4", site="site1"):
-    '''
-    Return True if side A is configured for BGP peering.
-    Else return False
-    '''
-    login1 = Login(s1apic, s1user, s1password)
-    login2 = Login(s2apic, s2user, s2password)
-
-    cookies1 = login1.getCookie()
-    cookies2 = login2.getCookie()
-
-    if site == "site1":
-        cookies = cookies1
-        apic = s1apic
-
-    elif site == "site2":
-        cookies = cookies2
-        apic = s2apic
-
-    payload = ""
-
-    url = "https://" + apic + \
-    "/api/node/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v4/rspathL3OutAtt-[topology/pod-1/protpaths-1201-1202/pathep-[P3_3]]/mem-A.json"
-    
-    try:
-        response = requests.get(url, cookies=cookies, data=payload, verify=False)
-        response.raise_for_status()
-        result = json.loads(response.text)
-        ipaddress = result["imdata"][0]["l3extMember"]["attributes"]["addr"]
-        if ipaddress == "16.16.4.2/24":
+    def side_is_down(self):
+        '''
+        return True if node is not active or its BGP peer peering state is not established
+        '''
+        if self.getNodeState() != "active":
             return True
         else:
             return False
+        
+    def side_configuredFlag(self, ipAddress, memA):
+        '''
+            Return True if side A is configured for BGP peering.
+            Else return False
+        '''
+        cookies = self.getCookie()
 
-    except requests.exceptions.HTTPError as err:
-        print(f"HTTP error occurred, the node", err)
+        payload = ""
+
+        url = memA
+        try:
+            response = requests.get(url, cookies=cookies, data=payload, verify=False)
+            response.raise_for_status()
+            result = json.loads(response.text)
+            address = result["imdata"][0]["l3extMember"]["attributes"]["addr"]
+            if  ipAddress in address:
+                return True
+            else:
+                return False
+        except requests.exceptions.HTTPError as err:
+            print(f"HTTP error occurred:", err)
+        except requests.exceptions.ConnectionError as err:
+            print("Connection error occurred:", err)
     
-    except requests.exceptions.ConnectionError as err:
-        print("Connection error occurred:", err)
+        except requests.exceptions.Timeout as err:
+            print("Timeout error occurred:", err)
+        except requests.exceptions.RequestException as err:
+            print("An error occurred:", err)
     
-    except requests.exceptions.Timeout as err:
-        print("Timeout error occurred:", err)
-
-    except requests.exceptions.RequestException as err:
-        print("An error occurred:", err)
-
-def monitor_reconfigBgp():
-
-    global bgp_sideA_configured
-    global bgp_sideB_configured
-    if side_configuredFlag():
-        bgp_sideA_configured = True
-        bgp_sideB_configured = False
+def shortenUrl(string):
+    match = re.search(r'peer-\[([\w\d:/.]+)\]', string)
+    if match:
+        peer_string = match.group(1)
+        return peer_string
     else:
-        bgp_sideA_configured = False
-        bgp_sideB_configured = True
+        print("String not found.")
+
+def monitor_reconfigBgpSite1():
+    # LA1 and LA2 are in vpc pair, LA1 is sideA, LA2 is sideB
+    # LA3 and LA4 are in vpc pair, LA3 is sideA, LA4 is sideB
+
+    LA1 = BorderLeaf("LA1","1201","site1","1",s1apic, s1user, s1password)
+    LA2 = BorderLeaf("LA2","1202","site1","1",s1apic, s1user, s1password)
+
+    LA3 = BorderLeaf("LA3","1203","site1","1",s1apic, s1user, s1password)
+    LA4 = BorderLeaf("LA4","1204","site1","1",s1apic, s1user, s1password)
+
+    BorderLeafSite1List = [LA1,LA2,LA3,LA4]
+
+    global LA12_bgp_sideA_configured
+    global LA12_bgp_sideB_configured
+    global LA34_bgp_sideA_configured
+    global LA34_bgp_sideB_configured
+
+    LA12sideAconfiguredStates = []
+    for ipAddress, memA in ipVpcMemberMappingSite1LA12.items():
+        LA12sideAconfiguredStates.append(LA1.side_configuredFlag(ipAddress, memA))
+
+    if all(LA12sideAconfiguredStates):
+        LA12_bgp_sideA_configured = True
+        LA12_bgp_sideB_configured = False
+    else:
+        LA12_bgp_sideA_configured = False
+        LA12_bgp_sideB_configured = True
+    
+    LA34sideAconfiguredStates = []
+    for ipAddress, memA in ipVpcMemberMappingSite1LA34.items():
+        LA34sideAconfiguredStates.append(LA3.side_configuredFlag(ipAddress, memA))
+
+    if all(LA34sideAconfiguredStates):
+        LA34_bgp_sideA_configured = True
+        LA34_bgp_sideB_configured = False
+    else:
+        LA34_bgp_sideA_configured = False
+        LA34_bgp_sideB_configured = True
+
     # check status of BGP configured on side-A and side-B
 
     while True:
         time.sleep(5)
-        LA1_bgpPeerStateV4 = getBgpState("1201", site="site1", ipv="v4")
-        LA2_bgpPeerStateV4 = getBgpState("1202", site="site1", ipv="v4")
+        for bl in BorderLeafSite1List:
+            print(bl.nodeName, "state:", bl.getNodeState())
+        # BGP state on LA1
+        for url in LA1_bgp_url:
+            LA1.bgpUrl = url
+            print(f"LA1 BGP peer to",shortenUrl(url),"state:--->", LA1.getBgpState())
+        
+        # BGP state on LA2
+        for url in LA2_bgp_url:
+            LA2.bgpUrl = url
+            print(f"LA2 BGP peer to",shortenUrl(url),"state:--->", LA2.getBgpState())
+        
+        # BGP state on LA3
+        for url in LA3_bgp_url:
+            LA3.bgpUrl = url
+            print(f"LA3 BGP peer to",shortenUrl(url),"state:--->", LA3.getBgpState())
+        
+        # BGP state on LA4
+        for url in LA4_bgp_url:
+            LA4.bgpUrl = url
+            print(f"LA4 BGP peer to",shortenUrl(url),"state:--->",LA4.getBgpState())
 
-        print("LA1 BGP peering state:",LA1_bgpPeerStateV4)
-        print("SideA configured state:", bgp_sideA_configured)
-        print("-------------******---------------")
-        print("LA2 BGP peering state:",LA2_bgpPeerStateV4)
-        print("SideB configured state:", bgp_sideB_configured)
-        print("-------------******---------------")
+        # Monitor side A
+        if LA1.side_is_down() and not LA12_bgp_sideB_configured:
+            # configure sideB
+            LA2.addRsPath(rsPath_LA12_tenant5_v307_v4,rsPath_LA12_tenant5_v307_v4_LocB)
+            LA2.addRsPath(rsPath_LA12_tenant5_v307_v6,rsPath_LA12_tenant5_v307_v6_LocB)
+            LA2.addRsPath(rsPath_LA12_tenant6_v513_v4,rsPath_LA12_tenant6_v513_v4_LocB)
+            LA2.addRsPath(rsPath_LA12_tenant6_v513_v6,rsPath_LA12_tenant6_v513_v6_LocB)
+            LA2.addRsPath(rsPath_LA12_tenant6_v704_v4,rsPath_LA12_tenant6_v704_v4_LocB)
+            LA2.addRsPath(rsPath_LA12_tenant6_v704_v6,rsPath_LA12_tenant6_v704_v6_LocB)
+            LA12_bgp_sideB_configured = True
+            LA12_bgp_sideA_configured = False
+            print("Configure BGP on Side B - LA2 as Side A got BGP peering issue.")
+     
+        # Monitor side B
+        if LA2.side_is_down() and not LA12_bgp_sideA_configured:
+            # configure sideB
+            LA1.addRsPath(rsPath_LA12_tenant5_v307_v4,rsPath_LA12_tenant5_v307_v4_LocA)
+            LA1.addRsPath(rsPath_LA12_tenant5_v307_v6,rsPath_LA12_tenant5_v307_v6_LocA)
+            LA1.addRsPath(rsPath_LA12_tenant6_v513_v4,rsPath_LA12_tenant6_v513_v4_LocA)
+            LA1.addRsPath(rsPath_LA12_tenant6_v513_v6,rsPath_LA12_tenant6_v513_v6_LocA)
+            LA1.addRsPath(rsPath_LA12_tenant6_v704_v4,rsPath_LA12_tenant6_v704_v4_LocA)
+            LA1.addRsPath(rsPath_LA12_tenant6_v704_v6,rsPath_LA12_tenant6_v704_v6_LocA)
+            LA12_bgp_sideB_configured = False
+            LA12_bgp_sideA_configured = True
+            print("Configure BGP on Side A - LA1 as Side B got BGP peering issue.")
 
          # Monitor side A
-        if sideA_is_down() and not bgp_sideB_configured:
-            configure_sideB()
-            bgp_sideB_configured = True  
-            bgp_sideA_configured = False
-            print("Configure BGP on Side B as Side A got BGP peering issue.")
-            print(f"Side B Configured:", bgp_sideB_configured)
+        if LA3.side_is_down() and not LA34_bgp_sideB_configured:
+            # configure sideB
+            LA4.addRsPath(rsPath_LA34_tenant5_v308_v4,rsPath_LA34_tenant5_v308_v4_LocB)
+            LA4.addRsPath(rsPath_LA34_tenant5_v308_v6,rsPath_LA34_tenant5_v308_v6_LocB)
+            LA4.addRsPath(rsPath_LA34_tenant6_v515_v4,rsPath_LA34_tenant6_v515_v4_LocB)
+            LA4.addRsPath(rsPath_LA34_tenant6_v515_v6,rsPath_LA34_tenant6_v515_v6_LocB)
+            LA4.addRsPath(rsPath_LA34_tenant6_v708_v4,rsPath_LA34_tenant6_v708_v4_LocB)
+            LA4.addRsPath(rsPath_LA34_tenant6_v708_v6,rsPath_LA34_tenant6_v708_v6_LocB)
+            LA34_bgp_sideB_configured = True
+            LA34_bgp_sideA_configured = False
+            print("Configure BGP on Side B - LA4 as Side A got BGP peering issue.")
         
         # Monitor side B
-        if sideB_is_down() and not bgp_sideA_configured:
-            configure_sideA()
-            bgp_sideA_configured = True
-            bgp_sideB_configured = False
-            print("Configure BGP on Side A as Side B got BGP peering issue.")
-            print(f"Side A Configured:", bgp_sideA_configured)
+        if LA4.side_is_down() and not LA34_bgp_sideA_configured:
+            # configure sideB
+            LA3.addRsPath(rsPath_LA34_tenant5_v308_v4,rsPath_LA34_tenant5_v308_v4_LocA)
+            LA3.addRsPath(rsPath_LA34_tenant5_v308_v6,rsPath_LA34_tenant5_v308_v6_LocA)
+            LA3.addRsPath(rsPath_LA34_tenant6_v515_v4,rsPath_LA34_tenant6_v515_v4_LocA)
+            LA3.addRsPath(rsPath_LA34_tenant6_v515_v6,rsPath_LA34_tenant6_v515_v6_LocA)
+            LA3.addRsPath(rsPath_LA34_tenant6_v708_v4,rsPath_LA34_tenant6_v708_v4_LocA)
+            LA3.addRsPath(rsPath_LA34_tenant6_v708_v6,rsPath_LA34_tenant6_v708_v6_LocA)
+            LA34_bgp_sideB_configured = False
+            LA34_bgp_sideA_configured = True
+            print("Configure BGP on Side A - LA3 as Side B got BGP peering issue.")
         
         time.sleep(10)  # Wait for 10 seconds before the next iteration
 
-def main():
-    print("====================================================")
-   
-    print(f"Border Leaf BGP peering state and fabric node state:")
+def monitor_reconfigBgpSite2():
+    # LA1 and LA2 are in vpc pair, LA1 is sideA, LA2 is sideB
+    # LA3 and LA4 are in vpc pair, LA3 is sideA, LA4 is sideB
 
-    monitor_reconfigBgp()
+    LB1 = BorderLeaf("LB1","1201","site2","1",s2apic, s2user, s2password)
+    LB2 = BorderLeaf("LB2","1202","site2","1",s2apic, s2user, s2password)
+
+    BorderLeafSite2List = [LB1,LB2]
+
+    global LB12_bgp_sideA_configured
+    global LB12_bgp_sideB_configured
+   
+    LB12sideAconfiguredStates = []
+    for ipAddress, memA in ipVpcMemberMappingSite2LB12.items():
+        LB12sideAconfiguredStates.append(LB1.side_configuredFlag(ipAddress, memA))
+
+    if all(LB12sideAconfiguredStates):
+        LB12_bgp_sideA_configured = True
+        LB12_bgp_sideB_configured = False
+    else:
+        LB12_bgp_sideA_configured = False
+        LB12_bgp_sideB_configured = True
     
-    
+    # check status of BGP configured on side-A and side-B
+
+    while True:
+        time.sleep(5)
+        for bl in BorderLeafSite2List:
+            print(bl.nodeName, "state:", bl.getNodeState())
+
+        # BGP state on LB1
+        for url in LB1_bgp_url:
+            LB1.bgpUrl = url
+            print(f"LB1 BGP peer to",shortenUrl(url),"state:--->", LB1.getBgpState())
+        
+        # BGP state on LB2
+        for url in LB2_bgp_url:
+            LB2.bgpUrl = url
+            print(f"LB2 BGP peer to",shortenUrl(url),"state:--->", LB2.getBgpState())
+        
+        # Monitor side A
+        if LB1.side_is_down() and not LB12_bgp_sideB_configured:
+            # configure sideB
+            LB2.addRsPath(rsPath_LB12_tenant6_v514_v4,rsPath_LB12_tenant6_v514_v4_LocB)
+            LB2.addRsPath(rsPath_LB12_tenant6_v514_v6,rsPath_LB12_tenant6_v514_v6_LocB)
+            LB2.addRsPath(rsPath_LB12_tenant6_v516_v4,rsPath_LB12_tenant6_v516_v4_LocB)
+            LB2.addRsPath(rsPath_LB12_tenant6_v516_v6,rsPath_LB12_tenant6_v516_v6_LocB)
+            LB2.addRsPath(rsPath_LB12_tenant6_v712_v4,rsPath_LB12_tenant6_v712_v4_LocB)
+            LB2.addRsPath(rsPath_LB12_tenant6_v712_v6,rsPath_LB12_tenant6_v712_v6_LocB)
+            LB12_bgp_sideB_configured = True
+            LB12_bgp_sideA_configured = False
+            print("Configure BGP on Side B - LB2 as Side A got BGP peering issue.")
+        
+        # Monitor side B
+        if LB2.side_is_down() and not LB12_bgp_sideA_configured:
+            # configure sideB
+            LB1.addRsPath(rsPath_LB12_tenant6_v514_v4,rsPath_LB12_tenant6_v514_v4_LocA)
+            LB1.addRsPath(rsPath_LB12_tenant6_v514_v6,rsPath_LB12_tenant6_v514_v6_LocA)
+            LB1.addRsPath(rsPath_LB12_tenant6_v516_v4,rsPath_LB12_tenant6_v516_v4_LocA)
+            LB1.addRsPath(rsPath_LB12_tenant6_v516_v6,rsPath_LB12_tenant6_v516_v6_LocA)
+            LB1.addRsPath(rsPath_LB12_tenant6_v712_v4,rsPath_LB12_tenant6_v712_v4_LocA)
+            LB1.addRsPath(rsPath_LB12_tenant6_v712_v6,rsPath_LB12_tenant6_v712_v6_LocA)
+            LB12_bgp_sideB_configured = False
+            LB12_bgp_sideA_configured = True
+            print("Configure BGP on Side A - LB1 as Side B got BGP peering issue.")
+
+        time.sleep(10)  # Wait for 10 seconds before the next iteration
+
+def main_threading():
+    thread1 = threading.Thread(target=monitor_reconfigBgpSite1)
+    thread2 = threading.Thread(target=monitor_reconfigBgpSite2)
+    thread1.start()
+    thread2.start()
+    thread1.join()
+    thread2.join()
+
+def main():
+    print("====================================================")    
+    print(f"Border Leaf BGP peering state and fabric node state:")
+    main_threading()
+
 if __name__ == "__main__":
     main()

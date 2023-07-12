@@ -19,3 +19,24 @@ L3OUT-LB12-v712
 
 # first script
 L3OUT-LA12-v704
+
+----
+
+LA12:
+L3OUT-LA12-v307         Tenant-5
+L3OUT-LA12-v513         Tenant-6
+L3OUT-LA12-v704         Tenant-6
+
+
+LA34:
+L3OUT-LA34-v308         Tenant-5
+L3OUT-LA34-v515         Tenant-6
+L3OUT-LA34-v708         Tenant-6
+
+
+
+LB12
+
+L3OUT-LB12-v514         Tenant-6
+L3OUT-LB12-v516         Tenant-6
+L3OUT-LB12-v712         Tenant-6

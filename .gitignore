@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+# ignore get-pip
+get-pip.py
 # Distribution / packaging
 .Python
 bin/
