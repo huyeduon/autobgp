@@ -38,3 +38,10 @@ SideA configured state: False</br>
 
 ## What's next</br>
 The script can be enhanced to support multiple border leafs, L3Outs, and sites, enabling scalability. You can utilize data structures like lists or dictionaries to store object information, such as APIC URLs, credentials, and identifiers. By iterating through these structures, you can perform operations on each object individually.
+
+
+## Update</br>
+The script has been involved to support multiple sites, multiple border leafs, l3outs </br>
+To run the script: </br>
+
+python fullautobgp.py
