@@ -130,7 +130,7 @@ class BorderLeaf(Login):
                 return result["imdata"][0]["bgpPeerEntry"]["attributes"]["operSt"]
 
             except requests.exceptions.HTTPError as err:
-                print(f"HTTP error occurred, the node {self.nodeId} is unreachable!")
+                print(f"HTTP error occurred, the node {self.nodeId} site {self.siteName} unreachable!")
     
             except requests.exceptions.ConnectionError as err:
                 print("Connection error occurred:", err)
