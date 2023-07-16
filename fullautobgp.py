@@ -5,6 +5,7 @@ import json
 import time
 import threading
 import re
+import logging
 requests.packages.urllib3.disable_warnings()
 from config import s1apic, s1user, s1password, s2apic, s2user, s2password
 from config import LA1_bgp_url, LA2_bgp_url, LA3_bgp_url, LA4_bgp_url, LB1_bgp_url, LB2_bgp_url
@@ -21,6 +22,9 @@ from config import rsPath_LB12_tenant6_v514_v4_LocA, rsPath_LB12_tenant6_v514_v4
 from config import rsPath_LB12_tenant6_v516_v4_LocA, rsPath_LB12_tenant6_v516_v4_LocB, rsPath_LB12_tenant6_v516_v6_LocA, rsPath_LB12_tenant6_v516_v6_LocB 
 from config import rsPath_LB12_tenant6_v712_v4_LocA, rsPath_LB12_tenant6_v712_v4_LocB, rsPath_LB12_tenant6_v712_v6_LocA, rsPath_LB12_tenant6_v712_v6_LocB 
 from config import ipVpcMemberMappingSite1LA12, ipVpcMemberMappingSite1LA34, ipVpcMemberMappingSite2LB12
+
+logging.basicConfig(filename='logs.txt', level=logging.INFO,
+                    format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 class Login:
     def __init__(self, url, username, password):
@@ -256,11 +260,12 @@ def monitor_reconfigBgpSite1():
         time.sleep(5)
         for bl in BorderLeafSite1List:
             print(bl.nodeName, "state:", bl.getNodeState())
+            logging.info(bl.nodeName, "state:", bl.getNodeState())
         # BGP state on LA1
         for url in LA1_bgp_url:
             LA1.bgpUrl = url
             print(f"LA1 BGP peer to",shortenUrl(url),"state:--->", LA1.getBgpState())
-        
+            logging.info("LA1 BGP peer to",shortenUrl(url),"state:--->", LA1.getBgpState())
         # BGP state on LA2
         for url in LA2_bgp_url:
             LA2.bgpUrl = url
