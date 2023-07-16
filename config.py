@@ -135,61 +135,6 @@ LA4_bgp_url = [LA4_tenant5_v308_v4, LA4_tenant5_v308_v6, LA4_tenant6_v515_v4, LA
 LB1_bgp_url = [LB1_tenant6_v514_v4, LB1_tenant6_v514_v6, LB1_tenant6_v516_v4, LB1_tenant6_v516_v6, LB1_tenant6_v712_v4, LB1_tenant6_v712_v6]
 LB2_bgp_url = [LB2_tenant6_v514_v4, LB2_tenant6_v514_v6, LB2_tenant6_v516_v4, LB2_tenant6_v516_v6, LB2_tenant6_v712_v4, LB2_tenant6_v712_v6]
 
-LA1_bgp_url_dict = {
-    "LA1_tenant5_v307_v4": LA1_tenant5_v307_v4,
-    "LA1_tenant5_v307_v6": LA1_tenant5_v307_v6,
-    "LA1_tenant6_v513_v4": LA1_tenant6_v513_v4,
-    "LA1_tenant6_v513_v6": LA1_tenant6_v513_v6,
-    "LA1_tenant6_v704_v4": LA1_tenant6_v704_v4,
-    "LA1_tenant6_v704_v6": LA1_tenant6_v704_v6
-}
-
-LA2_bgp_url_dict = {
-    "LA2_tenant5_v307_v4": LA2_tenant5_v307_v4,
-    "LA2_tenant5_v307_v6": LA2_tenant5_v307_v6,
-    "LA2_tenant6_v513_v4": LA2_tenant6_v513_v4,
-    "LA2_tenant6_v513_v6": LA2_tenant6_v513_v6,
-    "LA2_tenant6_v704_v4": LA2_tenant6_v704_v4,
-    "LA2_tenant6_v704_v6": LA2_tenant6_v704_v6
-}
-
-LA3_bgp_url_dict = {
-    "LA3_tenant5_v308_v4": LA3_tenant5_v308_v4,
-    "LA3_tenant5_v308_v6": LA3_tenant5_v308_v6,
-    "LA3_tenant6_v515_v4": LA3_tenant6_v515_v4,
-    "LA3_tenant6_v515_v6": LA3_tenant6_v515_v6,
-    "LA3_tenant6_v708_v4": LA3_tenant6_v708_v4,
-    "LA3_tenant6_v708_v6": LA3_tenant6_v708_v6
-}
-
-LA4_bgp_url_dict = {
-    "LA4_tenant5_v308_v4": LA4_tenant5_v308_v4,
-    "LA4_tenant5_v308_v6": LA4_tenant5_v308_v6,
-    "LA4_tenant6_v515_v4": LA4_tenant6_v515_v4,
-    "LA4_tenant6_v515_v6": LA4_tenant6_v515_v6,
-    "LA4_tenant6_v708_v4": LA4_tenant6_v708_v4,
-    "LA4_tenant6_v708_v6": LA4_tenant6_v708_v6
-}
-
-LB1_bgp_url_dict = {
-    "LB1_tenant6_v514_v4": LB1_tenant6_v514_v4,
-    "LB1_tenant6_v514_v6": LB1_tenant6_v514_v6,
-    "LB1_tenant6_v516_v4": LB1_tenant6_v516_v4,
-    "LB1_tenant6_v516_v6": LB1_tenant6_v516_v6,
-    "LB1_tenant6_v712_v4": LB1_tenant6_v712_v4,
-    "LB1_tenant6_v712_v6": LB1_tenant6_v712_v6
-}
-
-LB2_bgp_url_dict = {
-    "LB2_tenant6_v514_v4": LB2_tenant6_v514_v4,
-    "LB2_tenant6_v514_v6": LB2_tenant6_v514_v6,
-    "LB2_tenant6_v516_v4": LB2_tenant6_v516_v4,
-    "LB2_tenant6_v516_v6": LB2_tenant6_v516_v6,
-    "LB2_tenant6_v712_v4": LB2_tenant6_v712_v4,
-    "LB2_tenant6_v712_v6": LB2_tenant6_v712_v6
-}
-
-
 # rsPath
 
 rsPath_LA12_tenant5_v307_v4 = "https://" + s1apic + \

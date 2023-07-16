@@ -7,21 +7,10 @@ import threading
 import re
 requests.packages.urllib3.disable_warnings()
 from config import s1apic, s1user, s1password, s2apic, s2user, s2password
-from config import LA1_tenant5_v307_v4, LA1_tenant5_v307_v6, LA1_tenant6_v513_v4, LA1_tenant6_v513_v6 
-from config import LA1_tenant6_v704_v4, LA1_tenant6_v704_v6, LA2_tenant5_v307_v4, LA2_tenant5_v307_v6
-from config import LA2_tenant6_v513_v4, LA2_tenant6_v513_v6, LA2_tenant6_v704_v4, LA2_tenant6_v704_v6
-from config import LA3_tenant5_v308_v4, LA3_tenant5_v308_v6, LA3_tenant6_v515_v4, LA3_tenant6_v515_v6
-from config import LA3_tenant6_v708_v4, LA3_tenant6_v708_v6, LA4_tenant5_v308_v4, LA4_tenant5_v308_v6
-from config import LA4_tenant6_v515_v4, LA4_tenant6_v515_v6, LA4_tenant6_v708_v4, LA4_tenant6_v708_v6
-from config import LB1_tenant6_v514_v4, LB1_tenant6_v514_v6, LB1_tenant6_v516_v4, LB1_tenant6_v516_v6
-from config import LB1_tenant6_v712_v4, LB1_tenant6_v712_v6, LB2_tenant6_v514_v4, LB2_tenant6_v514_v6
-from config import LB2_tenant6_v516_v4, LB2_tenant6_v516_v6, LB2_tenant6_v712_v4, LB2_tenant6_v712_v6
 from config import LA1_bgp_url, LA2_bgp_url, LA3_bgp_url, LA4_bgp_url, LB1_bgp_url, LB2_bgp_url
-from config import LA1_bgp_url_dict, LA2_bgp_url_dict, LA3_bgp_url_dict, LA4_bgp_url_dict, LB1_bgp_url_dict, LB2_bgp_url_dict
 from config import rsPath_LA12_tenant5_v307_v4, rsPath_LA12_tenant5_v307_v6, rsPath_LA12_tenant6_v513_v4, rsPath_LA12_tenant6_v513_v6, rsPath_LA12_tenant6_v704_v4, rsPath_LA12_tenant6_v704_v6
 from config import rsPath_LA34_tenant5_v308_v4, rsPath_LA34_tenant5_v308_v6, rsPath_LA34_tenant6_v515_v4, rsPath_LA34_tenant6_v515_v6, rsPath_LA34_tenant6_v708_v4, rsPath_LA34_tenant6_v708_v6
 from config import rsPath_LB12_tenant6_v514_v4, rsPath_LB12_tenant6_v514_v6, rsPath_LB12_tenant6_v516_v4, rsPath_LB12_tenant6_v516_v6, rsPath_LB12_tenant6_v712_v4, rsPath_LB12_tenant6_v712_v6
-from config import rsPath_LA12, rsPath_LA34, rsPath_LB12
 from config import rsPath_LA12_tenant5_v307_v4_LocA, rsPath_LA12_tenant5_v307_v4_LocB, rsPath_LA12_tenant5_v307_v6_LocA, rsPath_LA12_tenant5_v307_v6_LocB
 from config import rsPath_LA12_tenant6_v513_v4_LocA, rsPath_LA12_tenant6_v513_v4_LocB, rsPath_LA12_tenant6_v513_v6_LocA, rsPath_LA12_tenant6_v513_v6_LocB
 from config import rsPath_LA12_tenant6_v704_v4_LocA, rsPath_LA12_tenant6_v704_v4_LocB, rsPath_LA12_tenant6_v704_v6_LocA, rsPath_LA12_tenant6_v704_v6_LocB
@@ -31,7 +20,6 @@ from config import rsPath_LA34_tenant6_v708_v4_LocA, rsPath_LA34_tenant6_v708_v4
 from config import rsPath_LB12_tenant6_v514_v4_LocA, rsPath_LB12_tenant6_v514_v4_LocB, rsPath_LB12_tenant6_v514_v6_LocA, rsPath_LB12_tenant6_v514_v6_LocB
 from config import rsPath_LB12_tenant6_v516_v4_LocA, rsPath_LB12_tenant6_v516_v4_LocB, rsPath_LB12_tenant6_v516_v6_LocA, rsPath_LB12_tenant6_v516_v6_LocB 
 from config import rsPath_LB12_tenant6_v712_v4_LocA, rsPath_LB12_tenant6_v712_v4_LocB, rsPath_LB12_tenant6_v712_v6_LocA, rsPath_LB12_tenant6_v712_v6_LocB 
-from config import LA1_tenant5_v307_v4_mem_A, LA1_tenant6_v513_v4_mem_A, LA1_tenant6_v704_v4_mem_A, LA3_tenant5_v308_v4_mem_A, LA3_tenant6_v515_v4_mem_A, LA3_tenant6_v708_v4_mem_A, LB1_tenant6_v514_v4_mem_A, LB1_tenant6_v516_v4_mem_A, LB1_tenant6_v712_v4_mem_A
 from config import ipVpcMemberMappingSite1LA12, ipVpcMemberMappingSite1LA34, ipVpcMemberMappingSite2LB12
 
 class Login:
