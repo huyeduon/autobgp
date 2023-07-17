@@ -1,0 +1,30 @@
+2023-07-17 10:34:26 - LB1 state: active
+2023-07-17 10:34:28 - LB2 state: active
+2023-07-17 10:34:30 - LB1 BGP peer to 12.12.14.10/32 state:---> established
+2023-07-17 10:34:32 - LB1 BGP peer to 2002::12:12:14:10/128 state:---> established
+2023-07-17 10:34:34 - LB1 BGP peer to 12.12.16.10/32 state:---> established
+2023-07-17 10:34:35 - LB1 BGP peer to 2002::12:12:16:10/128 state:---> established
+2023-07-17 10:34:37 - LB1 BGP peer to 16.16.12.10/32 state:---> established
+2023-07-17 10:34:39 - LB1 BGP peer to 2002::16:16:12:10/128 state:---> established
+2023-07-17 10:34:41 - LB2 BGP peer to 12.12.14.10/32 state:---> idle
+2023-07-17 10:34:43 - LB2 BGP peer to 2002::12:12:14:10/128 state:---> idle
+2023-07-17 10:34:44 - LB2 BGP peer to 12.12.16.10/32 state:---> idle
+2023-07-17 10:34:46 - LB2 BGP peer to 2002::12:12:16:10/128 state:---> idle
+2023-07-17 10:34:48 - LB2 BGP peer to 16.16.12.10/32 state:---> idle
+2023-07-17 10:34:50 - LB2 BGP peer to 2002::16:16:12:10/128 state:---> idle
+2023-07-17 10:35:08 - LB1 state: active
+2023-07-17 10:35:10 - LB2 state: active
+2023-07-17 10:35:12 - LB1 BGP peer to 12.12.14.10/32 state:---> established
+2023-07-17 10:35:14 - LB1 BGP peer to 2002::12:12:14:10/128 state:---> established
+2023-07-17 10:35:15 - LB1 BGP peer to 12.12.16.10/32 state:---> established
+2023-07-17 10:35:17 - LB1 BGP peer to 2002::12:12:16:10/128 state:---> established
+2023-07-17 10:35:19 - LB1 BGP peer to 16.16.12.10/32 state:---> established
+2023-07-17 10:35:21 - LB1 BGP peer to 2002::16:16:12:10/128 state:---> established
+2023-07-17 10:35:23 - LB2 BGP peer to 12.12.14.10/32 state:---> idle
+2023-07-17 10:35:25 - LB2 BGP peer to 2002::12:12:14:10/128 state:---> idle
+2023-07-17 10:35:27 - LB2 BGP peer to 12.12.16.10/32 state:---> idle
+2023-07-17 10:35:29 - LB2 BGP peer to 2002::12:12:16:10/128 state:---> idle
+2023-07-17 10:35:31 - LB2 BGP peer to 16.16.12.10/32 state:---> idle
+2023-07-17 10:35:34 - LB2 BGP peer to 2002::16:16:12:10/128 state:---> idle
+2023-07-17 10:35:45 - LA1 state: active
+2023-07-17 10:35:48 - LA2 state: active

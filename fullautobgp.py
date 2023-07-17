@@ -6,6 +6,11 @@ import time
 import threading
 import re
 import logging
+import shutil
+import secrets
+import string
+import os
+from datetime import datetime
 requests.packages.urllib3.disable_warnings()
 from config import s1apic, s1user, s1password, s2apic, s2user, s2password
 from config import LA1_bgp_url, LA2_bgp_url, LA3_bgp_url, LA4_bgp_url, LB1_bgp_url, LB2_bgp_url
@@ -23,8 +28,7 @@ from config import rsPath_LB12_tenant6_v516_v4_LocA, rsPath_LB12_tenant6_v516_v4
 from config import rsPath_LB12_tenant6_v712_v4_LocA, rsPath_LB12_tenant6_v712_v4_LocB, rsPath_LB12_tenant6_v712_v6_LocA, rsPath_LB12_tenant6_v712_v6_LocB 
 from config import ipVpcMemberMappingSite1LA12, ipVpcMemberMappingSite1LA34, ipVpcMemberMappingSite2LB12
 
-logging.basicConfig(filename='logs.txt', filemode='w', level=logging.INFO,
-                    format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
 
 class Login:
     def __init__(self, url, username, password):
@@ -417,7 +421,11 @@ def monitor_reconfigBgpSite2():
 
         time.sleep(10)  # Wait for 10 seconds before the next iteration
 
+
+
 def main_threading():
+    logging.basicConfig(filename='logs/logs.txt', filemode='w', level=logging.INFO,
+                    format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     thread1 = threading.Thread(target=monitor_reconfigBgpSite1)
     thread2 = threading.Thread(target=monitor_reconfigBgpSite2)
     thread1.start()
@@ -425,9 +433,28 @@ def main_threading():
     thread1.join()
     thread2.join()
 
+def copyLogs():
+    random_string_length = 8
+    random_string = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(random_string_length))
+    current_datetime = datetime.now()
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d-%H-%M-%S")
+    new_filename = f"logs/{formatted_datetime}-{random_string}-logs.txt"
+ 
+    try:
+        shutil.copyfile('logs/logs.txt', new_filename)
+        print("Logs is copied successfully!")
+    except FileNotFoundError:
+        print("This is the first time running the script, there is no logs.txt yet!")
+    except PermissionError:
+        print("Permission denied. Check file and folder permissions.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 def main():
     print("====================================================")    
     print(f"Border Leaf BGP peering state and fabric node state:")
+    copyLogs()
+    time.sleep(2)
     main_threading()
 
 if __name__ == "__main__":

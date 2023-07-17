@@ -1,0 +1,4 @@
+2023-07-17 10:36:15 - LB1 state: active
+2023-07-17 10:36:18 - LB2 state: active
+2023-07-17 10:36:19 - LA1 state: active
+2023-07-17 10:36:20 - LB1 BGP peer to 12.12.14.10/32 state:---> established
