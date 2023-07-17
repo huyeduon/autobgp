@@ -5,7 +5,8 @@ __pycache__/
 .DS_Store
 # C extensions
 *.so
-
+# ignore logs folder
+logs/
 # ignore get-pip
 get-pip.py
 # Distribution / packaging
