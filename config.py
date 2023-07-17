@@ -253,7 +253,6 @@ LA1_tenant6_v513_v4_mem_A = "https://" + s1apic + \
 #16.16.4.2/24
 LA1_tenant6_v704_v4_mem_A = "https://" + s1apic + \
         "/api/mo/uni/tn-tenant-6/out-L3OUT-LA12-v704/lnodep-node-1201-1202/lifp-svi-P3_3-vlan-704-v4/rspathL3OutAtt-[topology/pod-1/protpaths-1201-1202/pathep-[P3_3]]/mem-A.json"
-
 #10.12.8.2/24
 LA3_tenant5_v308_v4_mem_A = "https://" + s1apic + \
         "/api/mo/uni/tn-tenant-5/out-L3OUT-LA34-v308/lnodep-node-1203-1204/lifp-svi-P13_13_2-vlan-308-v4/rspathL3OutAtt-[topology/pod-1/protpaths-1203-1204/pathep-[P13_13_2]]/mem-A.json"

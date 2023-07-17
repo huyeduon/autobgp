@@ -9,7 +9,6 @@ import logging
 import shutil
 import secrets
 import string
-import os
 from datetime import datetime
 requests.packages.urllib3.disable_warnings()
 from config import s1apic, s1user, s1password, s2apic, s2user, s2password
@@ -27,8 +26,6 @@ from config import rsPath_LB12_tenant6_v514_v4_LocA, rsPath_LB12_tenant6_v514_v4
 from config import rsPath_LB12_tenant6_v516_v4_LocA, rsPath_LB12_tenant6_v516_v4_LocB, rsPath_LB12_tenant6_v516_v6_LocA, rsPath_LB12_tenant6_v516_v6_LocB 
 from config import rsPath_LB12_tenant6_v712_v4_LocA, rsPath_LB12_tenant6_v712_v4_LocB, rsPath_LB12_tenant6_v712_v6_LocA, rsPath_LB12_tenant6_v712_v6_LocB 
 from config import ipVpcMemberMappingSite1LA12, ipVpcMemberMappingSite1LA34, ipVpcMemberMappingSite2LB12
-
-
 
 class Login:
     def __init__(self, url, username, password):
@@ -69,14 +66,16 @@ class BorderLeaf(Login):
         self.podId = podId
         self.siteIpAddress = siteIpAddress
         self.cookies = None
-        self._bgpUrl = None
+        self.bgpUrl = None
         #self.side = None  # configured Side (A/B)
         #self.rsPathUrl = None
         #self.rsPathConfigFileLocation = None
   
     def setSide(self, side):
         self.side = side
-
+    def setBgpUrl(self, bgpUrl):
+        self.bgpUrl = bgpUrl
+    '''
     @property
     def bgpUrl(self):
         return self._bgpUrl
@@ -84,7 +83,7 @@ class BorderLeaf(Login):
     @bgpUrl.setter
     def bgpUrl(self, url):
         self._bgpUrl = url
-    
+    '''
     def getNodeState(self): 
         '''
         Retrieve ACI leaf state, focusing on active and inactive state.
@@ -137,19 +136,6 @@ class BorderLeaf(Login):
 
             except requests.exceptions.RequestException as err:
                 print("An error occurred:", err)
-
-    def display_info(self):
-        node_state = self.getNodeState()
-        bgp_peering_state = self.getBgpState()
-        
-        #print("ACI Leaf Information:")
-        #print(f"Site Name: {self.siteName}")
-        #print(f"Pod ID: {self.podId}")
-        print(f"Node Name: {self.nodeName}")
-        #print(f"Node ID: {self.nodeId}")
-        #print(f"Node State: {node_state}")
-        print(f"BGP URL: {self.bgpUrl}")
-        print(f"BGP Peering State: {bgp_peering_state}")
 
     def addRsPath(self, rsPathUrl, rsPathConfigFileLocation):
         '''
@@ -270,23 +256,27 @@ def monitor_reconfigBgpSite1():
     
         # BGP state on LA1
         for url in LA1_bgp_url:
-            LA1.bgpUrl = url
+            LA1.setBgpUrl(url)
+            #LA1.bgpUrl = url
             print(f"LA1 BGP peer to {shortenUrl(url)} state:---> {LA1.getBgpState()}")
             logging.info(f"LA1 BGP peer to {shortenUrl(url)} state:---> {LA1.getBgpState()}")
         # BGP state on LA2
         for url in LA2_bgp_url:
-            LA2.bgpUrl = url
+            LA2.setBgpUrl(url)
+            #LA2.bgpUrl = url
             print(f"LA2 BGP peer to {shortenUrl(url)} state:---> {LA2.getBgpState()}")
             logging.info(f"LA2 BGP peer to {shortenUrl(url)} state:---> {LA2.getBgpState()}")
         # BGP state on LA3
         for url in LA3_bgp_url:
-            LA3.bgpUrl = url
+            LA3.setBgpUrl(url)
+            #LA3.bgpUrl = url
             print(f"LA3 BGP peer to {shortenUrl(url)} state:---> {LA3.getBgpState()}")
             logging.info(f"LA3 BGP peer to {shortenUrl(url)} state:---> {LA3.getBgpState()}")
         
         # BGP state on LA4
         for url in LA4_bgp_url:
-            LA4.bgpUrl = url
+            LA4.setBgpUrl(url)
+            #LA4.bgpUrl = url
             print(f"LA4 BGP peer to {shortenUrl(url)} state:---> {LA4.getBgpState()}")
             logging.info(f"LA4 BGP peer to {shortenUrl(url)} state:---> {LA4.getBgpState()}")
 
@@ -381,13 +371,15 @@ def monitor_reconfigBgpSite2():
 
         # BGP state on LB1
         for url in LB1_bgp_url:
-            LB1.bgpUrl = url
+            LB1.setBgpUrl(url)
+            #LB1.bgpUrl = url
             print(f"LB1 BGP peer to {shortenUrl(url)} state:---> {LB1.getBgpState()}")
             logging.info(f"LB1 BGP peer to {shortenUrl(url)} state:---> {LB1.getBgpState()}")
         
         # BGP state on LB2
         for url in LB2_bgp_url:
-            LB2.bgpUrl = url
+            LB2.setBgpUrl(url)
+            #LB2.bgpUrl = url
             print(f"LB2 BGP peer to {shortenUrl(url)} state:---> {LB2.getBgpState()}")
             logging.info(f"LB2 BGP peer to {shortenUrl(url)} state:---> {LB2.getBgpState()}")
         
@@ -420,8 +412,6 @@ def monitor_reconfigBgpSite2():
             logging.info(f"Configure BGP on Side A leaf LB1 since Side B got BGP peering issue..")
 
         time.sleep(10)  # Wait for 10 seconds before the next iteration
-
-
 
 def main_threading():
     logging.basicConfig(filename='logs/logs.txt', filemode='w', level=logging.INFO,
