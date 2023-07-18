@@ -250,7 +250,7 @@ def monitor_reconfigBgpSite1():
     # check status of BGP configured on side-A and side-B
 
     while True:
-        time.sleep(5)
+        time.sleep(3)
         for bl in BorderLeafSite1List:
             time.sleep(1)
             print(f"{bl.nodeName} state: {bl.getNodeState()}")
@@ -375,7 +375,7 @@ def monitor_reconfigBgpSite2():
     # check status of BGP configured on side-A and side-B
 
     while True:
-        time.sleep(5)
+        time.sleep(3)
         for bl in BorderLeafSite2List:
             time.sleep(1)
             print(f"{bl.nodeName} state: {bl.getNodeState()}")
