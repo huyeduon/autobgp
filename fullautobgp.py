@@ -3,12 +3,12 @@
 import requests
 import json
 import time
-import threading
 import re
 import logging
 import shutil
 import secrets
 import string
+import multiprocessing
 from datetime import datetime
 requests.packages.urllib3.disable_warnings()
 from config import s1apic, s1user, s1password, s2apic, s2user, s2password
@@ -226,6 +226,7 @@ def monitor_reconfigBgpSite1():
 
     LA12sideAconfiguredStates = []
     for ipAddress, memA in ipVpcMemberMappingSite1LA12.items():
+        time.sleep(1)
         LA12sideAconfiguredStates.append(LA1.side_configuredFlag(ipAddress, memA))
 
     if all(LA12sideAconfiguredStates):
@@ -251,6 +252,7 @@ def monitor_reconfigBgpSite1():
     while True:
         time.sleep(5)
         for bl in BorderLeafSite1List:
+            time.sleep(1)
             print(f"{bl.nodeName} state: {bl.getNodeState()}")
             logging.info(f"{bl.nodeName} state: {bl.getNodeState()}")
     
@@ -258,18 +260,21 @@ def monitor_reconfigBgpSite1():
         for url in LA1_bgp_url:
             LA1.setBgpUrl(url)
             #LA1.bgpUrl = url
+            time.sleep(1)
             print(f"LA1 BGP peer to {shortenUrl(url)} state:---> {LA1.getBgpState()}")
             logging.info(f"LA1 BGP peer to {shortenUrl(url)} state:---> {LA1.getBgpState()}")
         # BGP state on LA2
         for url in LA2_bgp_url:
             LA2.setBgpUrl(url)
             #LA2.bgpUrl = url
+            time.sleep(1)
             print(f"LA2 BGP peer to {shortenUrl(url)} state:---> {LA2.getBgpState()}")
             logging.info(f"LA2 BGP peer to {shortenUrl(url)} state:---> {LA2.getBgpState()}")
         # BGP state on LA3
         for url in LA3_bgp_url:
             LA3.setBgpUrl(url)
             #LA3.bgpUrl = url
+            time.sleep(1)
             print(f"LA3 BGP peer to {shortenUrl(url)} state:---> {LA3.getBgpState()}")
             logging.info(f"LA3 BGP peer to {shortenUrl(url)} state:---> {LA3.getBgpState()}")
         
@@ -277,6 +282,7 @@ def monitor_reconfigBgpSite1():
         for url in LA4_bgp_url:
             LA4.setBgpUrl(url)
             #LA4.bgpUrl = url
+            time.sleep(1)
             print(f"LA4 BGP peer to {shortenUrl(url)} state:---> {LA4.getBgpState()}")
             logging.info(f"LA4 BGP peer to {shortenUrl(url)} state:---> {LA4.getBgpState()}")
 
@@ -291,6 +297,7 @@ def monitor_reconfigBgpSite1():
             LA2.addRsPath(rsPath_LA12_tenant6_v704_v6,rsPath_LA12_tenant6_v704_v6_LocB)
             LA12_bgp_sideB_configured = True
             LA12_bgp_sideA_configured = False
+            time.sleep(1)
             print(f"Configure BGP on Side B leaf LA2 since Side A got BGP peering issue.")
             logging.info(f"Configure BGP on Side B leaf LA2 since Side A got BGP peering issue.")
      
@@ -305,6 +312,7 @@ def monitor_reconfigBgpSite1():
             LA1.addRsPath(rsPath_LA12_tenant6_v704_v6,rsPath_LA12_tenant6_v704_v6_LocA)
             LA12_bgp_sideB_configured = False
             LA12_bgp_sideA_configured = True
+            time.sleep(1)
             print(f"Configure BGP on Side A leaf LA1 since Side B got BGP peering issue.")
             logging.info(f"Configure BGP on Side A leaf LA1 since Side B got BGP peering issue.")
 
@@ -319,6 +327,7 @@ def monitor_reconfigBgpSite1():
             LA4.addRsPath(rsPath_LA34_tenant6_v708_v6,rsPath_LA34_tenant6_v708_v6_LocB)
             LA34_bgp_sideB_configured = True
             LA34_bgp_sideA_configured = False
+            time.sleep(1)
             print(f"Configure BGP on Side B leaf LA4 since Side A got BGP peering issue.")
             logging.info(f"Configure BGP on Side B leaf LA4 since Side A got BGP peering issue.")
         
@@ -333,6 +342,7 @@ def monitor_reconfigBgpSite1():
             LA3.addRsPath(rsPath_LA34_tenant6_v708_v6,rsPath_LA34_tenant6_v708_v6_LocA)
             LA34_bgp_sideB_configured = False
             LA34_bgp_sideA_configured = True
+            time.sleep(1)
             print(f"Configure BGP on Side A leaf LA3 since Side B got BGP peering issue.")
             logging.info(f"Configure BGP on Side A leaf LA3 since Side B got BGP peering issue.")
         
@@ -352,6 +362,7 @@ def monitor_reconfigBgpSite2():
    
     LB12sideAconfiguredStates = []
     for ipAddress, memA in ipVpcMemberMappingSite2LB12.items():
+        time.sleep(1)
         LB12sideAconfiguredStates.append(LB1.side_configuredFlag(ipAddress, memA))
 
     if all(LB12sideAconfiguredStates):
@@ -366,6 +377,7 @@ def monitor_reconfigBgpSite2():
     while True:
         time.sleep(5)
         for bl in BorderLeafSite2List:
+            time.sleep(1)
             print(f"{bl.nodeName} state: {bl.getNodeState()}")
             logging.info(f"{bl.nodeName} state: {bl.getNodeState()}")
 
@@ -373,6 +385,7 @@ def monitor_reconfigBgpSite2():
         for url in LB1_bgp_url:
             LB1.setBgpUrl(url)
             #LB1.bgpUrl = url
+            time.sleep(1)
             print(f"LB1 BGP peer to {shortenUrl(url)} state:---> {LB1.getBgpState()}")
             logging.info(f"LB1 BGP peer to {shortenUrl(url)} state:---> {LB1.getBgpState()}")
         
@@ -380,6 +393,7 @@ def monitor_reconfigBgpSite2():
         for url in LB2_bgp_url:
             LB2.setBgpUrl(url)
             #LB2.bgpUrl = url
+            time.sleep(1)
             print(f"LB2 BGP peer to {shortenUrl(url)} state:---> {LB2.getBgpState()}")
             logging.info(f"LB2 BGP peer to {shortenUrl(url)} state:---> {LB2.getBgpState()}")
         
@@ -394,6 +408,7 @@ def monitor_reconfigBgpSite2():
             LB2.addRsPath(rsPath_LB12_tenant6_v712_v6,rsPath_LB12_tenant6_v712_v6_LocB)
             LB12_bgp_sideB_configured = True
             LB12_bgp_sideA_configured = False
+            time.sleep(1)
             print(f"Configure BGP on Side B leaf LB2 since Side A got BGP peering issue.")
             logging.info(f"Configure BGP on Side B leaf LB2 since Side A got BGP peering issue.")
         
@@ -408,20 +423,23 @@ def monitor_reconfigBgpSite2():
             LB1.addRsPath(rsPath_LB12_tenant6_v712_v6,rsPath_LB12_tenant6_v712_v6_LocA)
             LB12_bgp_sideB_configured = False
             LB12_bgp_sideA_configured = True
+            time.sleep(1)
             print(f"Configure BGP on Side A leaf LB1 since Side B got BGP peering issue.")
             logging.info(f"Configure BGP on Side A leaf LB1 since Side B got BGP peering issue..")
 
         time.sleep(10)  # Wait for 10 seconds before the next iteration
 
-def main_threading():
+
+def main_multiprocessing():
     logging.basicConfig(filename='logs/logs.txt', filemode='w', level=logging.INFO,
                     format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    thread1 = threading.Thread(target=monitor_reconfigBgpSite1)
-    thread2 = threading.Thread(target=monitor_reconfigBgpSite2)
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+    
+    p1 = multiprocessing.Process(target=monitor_reconfigBgpSite1)
+    p2 = multiprocessing.Process(target=monitor_reconfigBgpSite2)
+    p1.start()
+    p2.start()
+    p1.join()
+    p2.join()
 
 def copyLogs():
     random_string_length = 8
@@ -445,7 +463,7 @@ def main():
     print(f"Border Leaf BGP peering state and fabric node state:")
     copyLogs()
     time.sleep(2)
-    main_threading()
+    main_multiprocessing()
 
 if __name__ == "__main__":
     main()
