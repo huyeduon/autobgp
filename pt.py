@@ -80,7 +80,8 @@ def getPortState(eth):
 def main():
     threads = []
     #eth= [1,3,6,7,8,9,11,13,16,17,18,19,27,35,36,37,38,40,43,45,49]
-    eth= [2,12,31,32,36,38]
+    #ethvpc = [1,3,6]
+    eth= [2,12,31,32,36,38,1,3,6]
     for e in eth:
         t = CustomThread(target=getPortState, args=(e,))
         t.start()
