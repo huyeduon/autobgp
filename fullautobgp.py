@@ -122,7 +122,11 @@ class BorderLeaf(Login):
                 response.raise_for_status()
                 result = json.loads(response.text)
                 #print(result)
-                return result["imdata"][0]["bgpPeerEntry"]["attributes"]["operSt"]
+                try:
+                    return result["imdata"][0]["bgpPeerEntry"]["attributes"]["operSt"]
+                except IndexError as e:
+                    print(result)
+                    print(f"An IndexError occurred: {e}")
 
             except requests.exceptions.HTTPError as err:
                 print(f"HTTP error occurred, node {self.nodeName} - {self.nodeId} - {self.siteName} unreachable!")

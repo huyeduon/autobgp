@@ -87,7 +87,7 @@ def main():
         t.start()
         threads.append(t)
     for t in threads:
-      print(t.join())
+        print(t.join())
 
     
 if __name__ == "__main__":
